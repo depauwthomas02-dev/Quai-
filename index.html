@@ -1445,12 +1445,7 @@ async function renderTrip(v) {
     const comp = v.comp, keepSl = $('#strip')?.scrollLeft || 0;
     body.innerHTML = `<div class="d-head">${`<span class="chip brand">SNCB</span>`}${c.legs.map(l => chip(l.short, l.type)).join('')}${pill(Math.max(c.dep.delay, c.arr.delay), c.canceled)}</div>
     <div class="ends"><div><div class="big tn">${hm(c.dep.time)}</div><div class="nm">${esc(c.dep.station)}</div></div><div class="track"><span></span><span></span></div><div><div class="big tn">${hm(c.arr.time)}</div><div class="nm">${esc(c.arr.station)}</div></div></div>
-    <div class="date">${esc(fD.format(new Date(c.dep.time * 1000)))}</div>
-    <div class="stats">
-      <div><div class="k">DÉPART</div><div class="v tn">${hm(c.dep.time)}${lateTag(c.dep.delay)}</div></div>
-      <div class="mid tn">${dur(total)}<br>${dist ? km(dist) : '–'}<br>${dist && total ? Math.round(dist / (total / 3600)) + ' km/h' : ''}</div>
-      <div><div class="k">ARRIVÉE</div><div class="v tn">${hm(c.arr.time)}${lateTag(c.arr.delay)}</div></div>
-    </div>
+    <div class="date">${esc(fD.format(new Date(c.dep.time * 1000)))} · <span class="tn">${dur(total)}${dist ? ' · ' + km(dist) : ''}</span></div>
     ${ts ? `<div class="live-row"><i></i><span>${esc(ts.text)}</span><span>${S.live ? 'temps réel' : 'simulation'}</span></div>` : ''}
     ${compoButton(comp, c.occ || l0.occ)}
     <div>${c.legs.map((l, i) => {
@@ -1513,8 +1508,7 @@ async function renderTrain(v) {
     const nextStop = st && st.kind !== 'done' ? (st.kind === 'between' ? st.next : stops[Math.min(st.idx + (st.kind === 'at' ? 1 : 0), stops.length - 1)]) : null;
     body.innerHTML = `<div class="d-head"><span class="chip brand">SNCB</span>${chip(veh.short, veh.type)}${pill(st && st.kind !== 'before' ? curDelay : 0, stops.every(s => s.canceled))}</div>
     <div class="ends"><div><div class="big tn">${hm(s0)}</div><div class="nm">${esc(first.name)}</div></div><div class="track"><span></span><span></span></div><div><div class="big tn">${hm(s1)}</div><div class="nm">${esc(last.name)}</div></div></div>
-    <div class="date">${esc(fD.format(new Date(first.dep * 1000)))}</div>
-    <div class="stats"><div><div class="k">DÉPART</div><div class="v tn">${hm(s0)}${lateTag(first.depDelay)}</div></div><div class="mid tn">${dur(d1 - d0)}<br>${km(dist)}<br>${Math.round(dist / Math.max(1, (d1 - d0) / 3600))} km/h</div><div><div class="k">ARRIVÉE</div><div class="v tn">${hm(s1)}${lateTag(last.arrDelay)}</div></div></div>
+    <div class="date">${esc(fD.format(new Date(first.dep * 1000)))} · <span class="tn">${dur(d1 - d0)}${dist ? ' · ' + km(dist) : ''}</span></div>
     ${st ? `<div class="live-row"><i></i><span>${esc(nextStop && st.kind !== 'before' ? `Prochain arrêt : ${nextStop.name} ${hm((nextStop.arr ?? nextStop.dep) + (nextStop.arrDelay || 0))}` : st.text)}</span><span>${S.live ? 'temps réel' : 'simulation'}</span></div>` : ''}
     ${st ? `<div class="note">${esc(st.text)}${maxDelay >= 60 ? ` · retard max. observé ${Math.round(maxDelay / 60)} min` : ''}</div>` : ''}
     ${compoButton(comp, v.occ)}
