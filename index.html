@@ -318,6 +318,30 @@ s.sched { color: var(--ink-3); font-size: .55em; font-weight: 600; text-decorati
 .cc-am li { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 600; min-width: 0; }
 .cc-am li svg { width: 20px; height: 20px; flex: none; color: var(--accent); }
 
+
+.compo-btn { display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 12px 14px; border-radius: 20px; background: var(--glass-inset); box-shadow: inset 0 1px 1px var(--rim), 0 1px 2px var(--hair); }
+.compo-btn .cb-ico { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); }
+.compo-btn .cb-ico svg { width: 24px; height: 24px; }
+.compo-btn .cb-txt { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.compo-btn b { font-size: 16px; font-weight: 700; }
+.compo-btn small { font-size: 13.5px; color: var(--ink-2); font-weight: 500; line-height: 1.35; }
+.compo-btn .go { color: var(--accent); font-weight: 700; display: flex; align-items: center; gap: 2px; white-space: nowrap; }
+.compo-btn.off .cb-ico { background: var(--chip); color: var(--ink-3); }
+.mini { display: flex; gap: 2px; margin-top: 3px; flex-wrap: wrap; }
+.mini i { width: 16px; height: 9px; border-radius: 3px; background: var(--chip); box-shadow: inset 0 0 0 1px var(--ink-3); opacity: .9; }
+.mini i.f { background: #F4C20D; box-shadow: none; }
+.mini i.lo { width: 12px; background: var(--ink-3); box-shadow: none; }
+.modal { position: fixed; inset: 0; z-index: 45; display: flex; align-items: flex-end; justify-content: center; }
+.modal-back { position: absolute; inset: 0; background: rgba(8,14,12,.32); animation: fadeIn .25s ease; }
+.modal-card { position: relative; width: calc(100% - 16px); max-width: 560px; margin-bottom: 8px; max-height: calc(100% - env(safe-area-inset-top, 0px) - 40px); border-radius: 40px; display: flex; flex-direction: column; overflow: hidden; animation: up .38s cubic-bezier(.2,.9,.25,1.05); }
+@keyframes up { from { transform: translateY(40%); opacity: .5; } }
+.modal-head { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 18px 18px 6px 20px; }
+.modal-head small { font-size: 13px; font-weight: 700; color: var(--ink-3); letter-spacing: .02em; }
+.modal-head h2 { margin: 0; font-family: var(--f-display); font-weight: 800; font-size: 26px; letter-spacing: -.025em; }
+.modal-body { overflow-y: auto; overscroll-behavior: contain; padding: 6px 16px calc(18px + env(safe-area-inset-bottom, 0px)); }
+.modal .compo-top h3 { display: none; }
+.modal .compo-top:not(:has(.seg)) { display: none; }
+
 /* ---------- Station picker ---------- */
 .picker { position: fixed; z-index: 40; inset: 0; display: flex; flex-direction: column; padding: calc(env(safe-area-inset-top, 0px) + 14px) max(16px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 10px) max(16px, env(safe-area-inset-left, 0px)); background: var(--glass); -webkit-backdrop-filter: blur(30px) saturate(180%); backdrop-filter: blur(30px) saturate(180%); animation: fadeIn .25s ease; }
 @keyframes fadeIn { from { opacity: 0; } }
@@ -1091,6 +1115,38 @@ function compoHTML(comp, view, occ, type) {
     </div>` : ''}
   </section>`;
 }
+/* ---- composition: compact button + panel ---- */
+function compoButton(comp, occ) {
+  if (comp === undefined) return `<div class="compo-btn off" aria-busy="true"><span class="cb-ico">${AI.train}</span><span class="cb-txt"><b>Composition du train</b><small>Chargement…</small></span></div>`;
+  if (!comp) return `<div class="compo-btn off"><span class="cb-ico">${AI.train}</span><span class="cb-txt"><b>Composition du train</b><small>Non communiquée pour ce train</small></span></div>`;
+  const units = comp.segments[0].units, cars = units.filter(u => u.kind !== 'loco'), h = firstHint(units);
+  const firsts = cars.filter(isFirst).map(u => u.no);
+  const sub = [`${cars.length} voiture${cars.length > 1 ? 's' : ''}`, h.known ? `1re : ${firsts.length > 1 ? 'voitures' : 'voiture'} ${listFr(firsts)}` : (firsts.length ? '' : 'classes non communiquées'), occ ? OCC[occ][0] : ''].filter(Boolean).join(' · ');
+  return `<button class="compo-btn lens" id="openCompo" aria-haspopup="dialog">
+    <span class="cb-ico">${AI.train}</span>
+    <span class="cb-txt"><b>Composition du train</b><small>${esc(sub)}${comp.segments.length > 1 ? ' · se sépare en ' + comp.segments.length : ''}</small>
+      <span class="mini" aria-hidden="true">${units.map(u => `<i class="${u.kind === 'loco' ? 'lo' : isFirst(u) ? 'f' : ''}"></i>`).join('')}</span></span>
+    <span class="go">Voir ${I.chev}</span></button>`;
+}
+function bindCompoButton(view, comp, occ, type, short) {
+  const b = $('#openCompo'); if (b) b.onclick = () => openCompo(view, comp, occ, type, short);
+}
+function openCompo(view, comp, occ, type, short) {
+  let host = $('#modalHost'); if (!host) { host = document.createElement('div'); host.id = 'modalHost'; document.body.appendChild(host); }
+  const last = document.activeElement;
+  host.innerHTML = `<div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <div class="modal-back" data-close></div>
+    <div class="modal-card glass strong">
+      <div class="modal-head"><div><small>${esc(short || '')}</small><h2 id="mTitle">Composition</h2></div><button class="icon-btn lens" data-close aria-label="Fermer">${I.x}</button></div>
+      <div class="modal-body">${compoHTML(comp, view, occ, type)}</div>
+    </div></div>`;
+  bindCompo(view, comp, occ, type);
+  const close = () => { host.innerHTML = ''; document.removeEventListener('keydown', esc_); last?.focus?.(); };
+  const esc_ = e => { if (e.key === 'Escape') close(); };
+  document.addEventListener('keydown', esc_);
+  host.querySelectorAll('[data-close]').forEach(el => el.onclick = close);
+  host.querySelector('.modal-head .icon-btn').focus();
+}
 function bindCompo(view, comp, occ, type) {
   const box = $('#compo'); if (!box || !comp) return;
   const redraw = (scrollTo) => {
@@ -1251,13 +1307,13 @@ async function renderTrip(v) {
     body.innerHTML = `<div class="d-head">${`<span class="chip brand">SNCB</span>`}${c.legs.map(l => chip(l.short, l.type)).join('')}${pill(Math.max(c.dep.delay, c.arr.delay), c.canceled)}</div>
     <div class="ends"><div><div class="big tn">${hm(c.dep.time)}</div><div class="nm">${esc(c.dep.station)}</div></div><div class="track"><span></span><span></span></div><div><div class="big tn">${hm(c.arr.time)}</div><div class="nm">${esc(c.arr.station)}</div></div></div>
     <div class="date">${esc(fD.format(new Date(c.dep.time * 1000)))}</div>
-    ${compoHTML(comp, v, c.occ || l0.occ, l0.type)}
     <div class="stats">
       <div><div class="k">DÉPART</div><div class="v tn">${hm(c.dep.time)}${lateTag(c.dep.delay)}</div></div>
       <div class="mid tn">${dur(total)}<br>${dist ? km(dist) : '–'}<br>${dist && total ? Math.round(dist / (total / 3600)) + ' km/h' : ''}</div>
       <div><div class="k">ARRIVÉE</div><div class="v tn">${hm(c.arr.time)}${lateTag(c.arr.delay)}</div></div>
     </div>
     ${ts ? `<div class="live-row"><i></i><span>${esc(ts.text)}</span><span>${S.live ? 'temps réel' : 'simulation'}</span></div>` : ''}
+    ${compoButton(comp, c.occ || l0.occ)}
     <div>${c.legs.map((l, i) => {
       const stops = segs[i];
       const st = l.vehicle ? trainState(l.vehicle) : null;
@@ -1276,7 +1332,7 @@ async function renderTrip(v) {
     <button class="btn lens ${isFavPair(c) ? 'on' : ''}" id="favTrip">${isFavPair(c) ? I.starF + ' Dans vos favoris' : I.star + ' Épingler ce trajet'}</button>
     ${demoNote()}`;
     if ($('#strip')) $('#strip').scrollLeft = keepSl;
-    bindCompo(v, comp, c.occ || l0.occ, l0.type);
+    bindCompoButton(v, comp, c.occ || l0.occ, l0.type, l0.short);
     body.querySelectorAll('.leg-h').forEach(b => b.onclick = () => { const l = c.legs[+b.dataset.leg]; push({ type: 'train', id: l.vehicleId, date: l.from.time, short: l.short, type_: l.type, board: l.from.station, occ: l.occ || (c.legs.length === 1 ? c.occ : null) }); });
     $('#favTrip').onclick = () => { const f = { from: c.dep.station, to: c.arr.station }; if (isFavPair(c)) S.favs = S.favs.filter(x => !(x.from === f.from && x.to === f.to)); else S.favs = [f, ...S.favs].slice(0, 12); store.set('favs', S.favs); drawn(); };
     if (current() === v) {
@@ -1319,10 +1375,10 @@ async function renderTrain(v) {
     body.innerHTML = `<div class="d-head"><span class="chip brand">SNCB</span>${chip(veh.short, veh.type)}${pill(st && st.kind !== 'before' ? curDelay : 0, stops.every(s => s.canceled))}</div>
     <div class="ends"><div><div class="big tn">${hm(s0)}</div><div class="nm">${esc(first.name)}</div></div><div class="track"><span></span><span></span></div><div><div class="big tn">${hm(s1)}</div><div class="nm">${esc(last.name)}</div></div></div>
     <div class="date">${esc(fD.format(new Date(first.dep * 1000)))}</div>
-    ${compoHTML(comp, v, v.occ, veh.type)}
     <div class="stats"><div><div class="k">DÉPART</div><div class="v tn">${hm(s0)}${lateTag(first.depDelay)}</div></div><div class="mid tn">${dur(d1 - d0)}<br>${km(dist)}<br>${Math.round(dist / Math.max(1, (d1 - d0) / 3600))} km/h</div><div><div class="k">ARRIVÉE</div><div class="v tn">${hm(s1)}${lateTag(last.arrDelay)}</div></div></div>
     ${st ? `<div class="live-row"><i></i><span>${esc(nextStop && st.kind !== 'before' ? `Prochain arrêt : ${nextStop.name} ${hm((nextStop.arr ?? nextStop.dep) + (nextStop.arrDelay || 0))}` : st.text)}</span><span>${S.live ? 'temps réel' : 'simulation'}</span></div>` : ''}
     ${st ? `<div class="note">${esc(st.text)}${maxDelay >= 60 ? ` · retard max. observé ${Math.round(maxDelay / 60)} min` : ''}</div>` : ''}
+    ${compoButton(comp, v.occ)}
     <ul class="tl">${stops.map((s, k) => {
       const end = k === 0 || k === stops.length - 1;
       const t = k === 0 ? s.dep : (s.arr ?? s.dep), d = k === 0 ? s.depDelay : s.arrDelay;
@@ -1333,7 +1389,7 @@ async function renderTrain(v) {
     }).join('')}</ul>
     ${demoNote()}`;
     if ($('#strip')) $('#strip').scrollLeft = keepSl;
-    bindCompo(v, comp, v.occ, veh.type);
+    bindCompoButton(v, comp, v.occ, veh.type, veh.short);
     setRoute({ segments: [stops], ends: [first, last], labels: [first, last], train: st && st.kind !== 'done' && st.kind !== 'before' ? st.pos : null });
   };
   draw(undefined);
