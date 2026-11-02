@@ -26,6 +26,8 @@
   --accent: #0A5FC8; --accent-soft: rgba(10,95,200,.12); --route: #0A5FC8; --route-glow: rgba(10,95,200,.22);
   --ok: #157A4C; --ok-bg: rgba(31,160,100,.16); --warn: #9A5A00; --warn-bg: rgba(240,160,30,.22); --bad: #B8261F; --bad-bg: rgba(220,60,50,.15);
   --chip: rgba(255,255,255,.78);
+  --gap-edge: max(8px, env(safe-area-inset-left, 0px));
+  --dock-h: 62px; --dock-b: max(14px, calc(env(safe-area-inset-bottom, 0px) - 12px));
   --f-display: "Bricolage Grotesque", -apple-system, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
   --f-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, system-ui, sans-serif;
 }
@@ -109,10 +111,10 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 /* ---------- Top bar ---------- */
 .top { position: fixed; z-index: 20; top: calc(env(safe-area-inset-top, 0px) + 10px); left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); display: flex; justify-content: space-between; align-items: center; gap: 10px; pointer-events: none; }
 .top > * { pointer-events: auto; }
-.brand { display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 18px 0 8px; border-radius: 26px; }
-.brand-mark { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: #fff; box-shadow: inset 0 1px 1px rgba(255,255,255,.5); }
-.brand b { font-family: var(--f-display); font-weight: 800; font-size: 21px; letter-spacing: -.02em; }
-.brand small { display: block; font-size: 11px; color: var(--ink-2); font-weight: 600; letter-spacing: .02em; margin-top: -2px; }
+.brand { display: flex; align-items: center; gap: 9px; height: 46px; padding: 0 16px 0 7px; border-radius: 23px; }
+.brand-mark { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: #fff; box-shadow: inset 0 1px 1px rgba(255,255,255,.5); }
+.brand b { font-family: var(--f-display); font-weight: 800; font-size: 19px; line-height: 1; letter-spacing: -.02em; }
+.brand small { display: block; font-size: 10.5px; color: var(--ink-2); font-weight: 600; letter-spacing: .02em; margin-top: 2px; }
 .status { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border-radius: 20px; font-weight: 700; font-size: 14px; }
 .status i { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px var(--ok-bg); }
 .status.demo i { background: var(--warn); box-shadow: 0 0 0 3px var(--warn-bg); }
@@ -121,14 +123,14 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 
 /* ---------- Sheet ---------- */
 .sheet {
-  position: fixed; z-index: 15; left: max(12px, env(safe-area-inset-left, 0px)); right: max(12px, env(safe-area-inset-right, 0px));
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 92px); height: var(--sheet-h, 52vh);
-  border-radius: 34px; display: flex; flex-direction: column; overflow: hidden;
+  position: fixed; z-index: 15; left: max(8px, env(safe-area-inset-left, 0px)); right: max(8px, env(safe-area-inset-right, 0px));
+  bottom: 8px; height: var(--sheet-h, 60vh);
+  border-radius: 40px; display: flex; flex-direction: column; overflow: hidden;
   transition: height .45s cubic-bezier(.2,.9,.25,1.05);
 }
 .sheet.dragging { transition: none; }
 @media (min-width: 860px) {
-  .sheet { right: auto; width: 430px; left: max(20px, env(safe-area-inset-left, 0px)); top: calc(env(safe-area-inset-top, 0px) + 76px); height: auto !important; bottom: calc(env(safe-area-inset-bottom, 0px) + 96px); }
+  .sheet { right: auto; width: 440px; left: max(20px, env(safe-area-inset-left, 0px)); top: calc(env(safe-area-inset-top, 0px) + 72px); height: auto !important; bottom: 20px; }
   .grab { display: none; }
 }
 .grab { flex: none; height: 22px; display: grid; place-items: center; cursor: grab; touch-action: none; }
@@ -137,18 +139,24 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .sheet-head h2 { font-family: var(--f-display); font-weight: 800; font-size: 26px; letter-spacing: -.025em; margin: 0; flex: 1; min-width: 0; text-wrap: balance; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .icon-btn { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--chip); flex: none; box-shadow: inset 0 1px 1px var(--rim), 0 1px 2px var(--shade); }
 .icon-btn[aria-pressed="true"] { color: var(--warn); }
-.sheet-body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 2px 16px 22px; -webkit-overflow-scrolling: touch; }
+.sheet-body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 2px 16px calc(var(--dock-b) + var(--dock-h) + 10px); -webkit-overflow-scrolling: touch; }
 .sheet-body > * + * { margin-top: 14px; }
+.sheet-body {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - var(--dock-b) - var(--dock-h) + 2px), transparent calc(100% - var(--dock-b) - var(--dock-h) / 2));
+  mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - var(--dock-b) - var(--dock-h) + 2px), transparent calc(100% - var(--dock-b) - var(--dock-h) / 2));
+}
+@media (min-width: 860px) { .sheet-body { padding-bottom: 92px; -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 88px), transparent calc(100% - 50px)); mask-image: linear-gradient(to bottom, #000 calc(100% - 88px), transparent calc(100% - 50px)); } }
 
 /* ---------- Tab bar ---------- */
-.dock { position: fixed; z-index: 20; bottom: calc(env(safe-area-inset-bottom, 0px) + 12px); left: max(12px, env(safe-area-inset-left, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); display: flex; gap: 10px; align-items: center; }
-@media (min-width: 860px) { .dock { right: auto; width: 430px; left: max(20px, env(safe-area-inset-left, 0px)); } }
-.tabs { flex: 1; height: 70px; border-radius: 35px; display: flex; padding: 6px; gap: 4px; }
-.tab { flex: 1; border-radius: 29px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 12px; font-weight: 600; color: var(--ink-2); }
-.tab svg { width: 24px; height: 24px; }
-.tab[aria-selected="true"] { color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 1px 1px var(--rim); }
-.fab { width: 70px; height: 70px; border-radius: 50%; display: grid; place-items: center; flex: none; }
-.fab svg { width: 28px; height: 28px; }
+.dock { position: fixed; z-index: 20; bottom: var(--dock-b); left: max(18px, calc(env(safe-area-inset-left, 0px) + 10px)); right: max(18px, calc(env(safe-area-inset-right, 0px) + 10px)); display: flex; gap: 10px; align-items: center; }
+@media (min-width: 860px) { .dock { right: auto; width: 420px; left: max(30px, calc(env(safe-area-inset-left, 0px) + 10px)); bottom: 30px; } }
+.dock .glass { background: var(--glass-strong); box-shadow: inset 0 1px 1px var(--rim), inset 0 -1px 1px var(--rim-low), 0 6px 24px -4px var(--shade), 0 0 0 .5px var(--hair); }
+.tabs { flex: 1; height: var(--dock-h); border-radius: calc(var(--dock-h) / 2); display: flex; padding: 4px; gap: 2px; }
+.tab { flex: 1; border-radius: calc(var(--dock-h) / 2 - 4px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 11px; font-weight: 600; color: var(--ink-2); }
+.tab svg { width: 23px; height: 23px; }
+.tab[aria-selected="true"] { color: var(--accent); background: var(--accent-soft); }
+.fab { width: var(--dock-h); height: var(--dock-h); border-radius: 50%; display: grid; place-items: center; flex: none; }
+.fab svg { width: 25px; height: 25px; }
 
 /* ---------- Search form ---------- */
 .inset { background: var(--glass-inset); border-radius: 24px; box-shadow: inset 0 1px 1px var(--rim), 0 1px 2px var(--hair); }
@@ -174,15 +182,20 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); padding: 6px 4px 0; }
 .list { display: flex; flex-direction: column; gap: 10px; }
 .card { display: block; width: 100%; text-align: left; padding: 14px 16px; border-radius: 22px; background: var(--glass-inset); box-shadow: inset 0 1px 1px var(--rim), 0 1px 2px var(--hair); }
-.conn { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; align-items: center; }
-.conn .times { display: flex; align-items: baseline; gap: 10px; font-family: var(--f-display); font-weight: 800; font-size: 26px; letter-spacing: -.02em; }
-.conn .times .bar { flex: 1; height: 2px; min-width: 18px; max-width: 70px; background: linear-gradient(90deg, var(--route), var(--route)); border-radius: 2px; align-self: center; position: relative; opacity: .7; }
+.conn { display: flex; flex-direction: column; gap: 9px; }
+.conn .r { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-width: 0; }
+.conn .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.conn .times { display: flex; align-items: baseline; gap: 10px; font-family: var(--f-display); font-weight: 800; font-size: 25px; letter-spacing: -.02em; line-height: 1; min-width: 0; }
+.conn .times .bar { flex: none; width: 34px; height: 2px; background: linear-gradient(90deg, var(--route), var(--route)); border-radius: 2px; align-self: center; position: relative; opacity: .7; }
 .conn .times .bar::before, .conn .times .bar::after { content: ""; position: absolute; top: -4px; width: 6px; height: 6px; border-radius: 50%; border: 2px solid var(--route); background: var(--land); }
 .conn .times .bar::before { left: -4px; } .conn .times .bar::after { right: -4px; background: var(--route); }
-.conn .meta { grid-column: 1; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 14px; color: var(--ink-2); }
-.conn .side { grid-row: 1 / span 2; grid-column: 2; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.conn .meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 15px; font-weight: 500; color: var(--ink-2); }
+.pill.sm { height: 26px; padding: 0 10px; font-size: 13px; gap: 6px; }
+.vchip { display: inline-flex; align-items: baseline; gap: 5px; height: 26px; align-items: center; padding: 0 10px; border-radius: 9px; background: var(--chip); box-shadow: inset 0 0 0 1px var(--hair); font-weight: 800; font-size: 15px; white-space: nowrap; }
+.vchip small { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.vchip.chg { background: var(--warn-bg); color: var(--warn); box-shadow: inset 0 0 0 1.5px var(--warn); }
 .conn.gone { opacity: .55; }
-.late { color: var(--warn); font-size: .62em; font-weight: 700; margin-left: 2px; letter-spacing: 0; }
+.late { color: var(--warn); font-size: .58em; font-weight: 700; margin-left: 3px; letter-spacing: 0; vertical-align: .35em; }
 .late.bad { color: var(--bad); }
 s.sched { color: var(--ink-3); font-size: .55em; font-weight: 600; text-decoration-thickness: 1.5px; }
 .chip { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 9px; border-radius: 9px; font-size: 13px; font-weight: 700; background: var(--chip); box-shadow: inset 0 0 0 1px var(--hair); white-space: nowrap; }
@@ -194,13 +207,13 @@ s.sched { color: var(--ink-3); font-size: .55em; font-weight: 600; text-decorati
 .pill.ok { color: var(--ok); background: var(--ok-bg); }
 .pill.warn { color: var(--warn); background: var(--warn-bg); }
 .pill.bad { color: var(--bad); background: var(--bad-bg); }
-.quai { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; min-width: 46px; height: 46px; padding: 0 6px; border-radius: 13px; background: var(--chip); box-shadow: inset 0 0 0 1px var(--hair); font-family: var(--f-display); font-size: 21px; font-weight: 800; line-height: 1; }
+.quai { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; min-width: 44px; height: 44px; padding: 0 6px; border-radius: 13px; background: var(--chip); box-shadow: inset 0 0 0 1px var(--hair); font-family: var(--f-display); font-size: 21px; font-weight: 800; line-height: 1; }
 .quai small { font-family: var(--f-body); font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 2px; }
 .quai.chg { background: var(--warn-bg); color: var(--warn); box-shadow: inset 0 0 0 1.5px var(--warn); }
-.dep { display: grid; grid-template-columns: 62px 1fr auto; gap: 12px; align-items: center; }
+.dep { display: grid; grid-template-columns: 58px 1fr auto; gap: 12px; align-items: center; }
 .dep .t { font-family: var(--f-display); font-weight: 800; font-size: 22px; letter-spacing: -.02em; line-height: 1.05; }
-.dep .t .late { display: block; font-size: 13px; margin: 0; }
-.dep .dest { font-weight: 700; font-size: 16px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dep .t .late { display: block; font-size: 13px; margin: 3px 0 0; vertical-align: 0; }
+.dep .dest { font-weight: 700; font-size: 17px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dep .sub { display: flex; gap: 6px; align-items: center; margin-top: 4px; color: var(--ink-2); font-size: 13px; min-width: 0; }
 .dep.cxl .dest, .dep.cxl .t { text-decoration: line-through; color: var(--ink-3); }
 
@@ -235,7 +248,7 @@ s.sched { color: var(--ink-3); font-size: .55em; font-weight: 600; text-decorati
 .tl li.past::before { opacity: .35; }
 .tl li.now-here::before { background: none; }
 .tl .tt { font-weight: 700; font-size: 15px; text-align: right; }
-.tl .tt .late { display: block; font-size: 12px; }
+.tl .tt .late { display: block; font-size: 12px; margin: 0; vertical-align: 0; }
 .tl .dot { width: 13px; height: 13px; border-radius: 50%; background: var(--land); border: 3px solid var(--route); justify-self: center; position: relative; z-index: 1; }
 .tl li.end .dot { width: 17px; height: 17px; background: var(--route); }
 .tl li.past .dot { opacity: .5; } .tl li.past .sn, .tl li.past .tt { color: var(--ink-3); }
@@ -835,11 +848,11 @@ const matLabel = c => c ? (MATERIAL[c.material] || c.material) + (c.units ? ` ·
 
 /* ================= UI helpers ================= */
 const head = $('#sheetHead'), body = $('#sheetBody');
-function pill(delay, canceled) {
-  if (canceled) return `<span class="pill bad"><i></i>Supprimé</span>`;
+function pill(delay, canceled, size = '') {
+  if (canceled) return `<span class="pill bad ${size}"><i></i>Supprimé</span>`;
   const m = Math.round(delay / 60);
-  if (m <= 0) return `<span class="pill ok"><i></i>À l'heure</span>`;
-  return `<span class="pill ${m >= 5 ? 'bad' : 'warn'}"><i></i>+${m} min</span>`;
+  if (m <= 0) return `<span class="pill ok ${size}"><i></i>À l'heure</span>`;
+  return `<span class="pill ${m >= 5 ? 'bad' : 'warn'} ${size}"><i></i>+${m} min</span>`;
 }
 const lateTag = d => { const m = Math.round(d / 60); return m > 0 ? `<span class="late ${m >= 5 ? 'bad' : ''}">+${m}</span>` : ''; };
 const chip = (short, type) => `<span class="chip t-${esc(type)}">${esc(short)}</span>`;
@@ -947,9 +960,9 @@ function renderResults() {
   <div class="list" style="margin-top:8px">${S.conns.map((c, i) => {
     const gone = c.dep.time + c.dep.delay < t - 30;
     return `<button class="card conn lens ${gone ? 'gone' : ''}" data-i="${i}">
-      <div class="times tn"><span>${hm(c.dep.time + c.dep.delay)}${lateTag(c.dep.delay)}</span><span class="bar"></span><span>${hm(c.arr.time + c.arr.delay)}${lateTag(c.arr.delay)}</span></div>
-      <div class="side">${pill(Math.max(c.dep.delay, c.arr.delay), c.canceled)}${quai(c.dep.platform, c.dep.platformChanged)}</div>
-      <div class="meta"><span class="tn">${dur(c.duration + c.arr.delay - c.dep.delay)}</span><span aria-hidden="true">·</span><span>${c.transfers ? c.transfers + ' corresp.' : 'Direct'}</span>${c.legs.map(l => chip(l.short, l.type)).join('')}</div>
+      <div class="r"><div class="times tn"><span>${hm(c.dep.time)}${lateTag(c.dep.delay)}</span><span class="bar"></span><span>${hm(c.arr.time)}${lateTag(c.arr.delay)}</span></div>${pill(Math.max(c.dep.delay, c.arr.delay), c.canceled, 'sm')}</div>
+      <div class="r"><div class="meta"><span class="tn">${dur(c.duration + c.arr.delay - c.dep.delay)}</span><span aria-hidden="true">·</span><span>${c.transfers ? (c.transfers > 1 ? c.transfers + ' correspondances' : '1 correspondance') : 'Direct'}</span></div><span class="vchip ${c.dep.platformChanged ? 'chg' : ''}"><small>Voie</small>${esc(c.dep.platform || '–')}</span></div>
+      <div class="chips">${c.legs.map(l => chip(l.short, l.type)).join('')}</div>
     </button>`;
   }).join('')}</div>`;
   box.querySelectorAll('.conn').forEach(b => b.onclick = () => push({ type: 'trip', conn: S.conns[+b.dataset.i] }));
@@ -976,13 +989,13 @@ async function renderTrip(v) {
     if (!ts && l0.vehicle) { ts = trainState(l0.vehicle); }
     const comp = v.comp;
     body.innerHTML = `<div class="d-head">${`<span class="chip brand">SNCB</span>`}${c.legs.map(l => chip(l.short, l.type)).join('')}${pill(Math.max(c.dep.delay, c.arr.delay), c.canceled)}</div>
-    <div class="ends"><div><div class="big tn">${hm(c.dep.time + c.dep.delay)}</div><div class="nm">${esc(c.dep.station)}</div></div><div class="track"><span></span><span></span></div><div><div class="big tn">${hm(c.arr.time + c.arr.delay)}</div><div class="nm">${esc(c.arr.station)}</div></div></div>
+    <div class="ends"><div><div class="big tn">${hm(c.dep.time)}</div><div class="nm">${esc(c.dep.station)}</div></div><div class="track"><span></span><span></span></div><div><div class="big tn">${hm(c.arr.time)}</div><div class="nm">${esc(c.arr.station)}</div></div></div>
     <div class="date">${esc(fD.format(new Date(c.dep.time * 1000)))}</div>
     <div><div class="art">${trainArt(comp?.material, l0.type)}</div><div class="model">${esc(comp ? matLabel(comp) : (comp === undefined ? 'Composition…' : 'Composition non communiquée'))}</div></div>
     <div class="stats">
-      <div><div class="k">DÉPART</div><div class="v tn">${hm(c.dep.time + c.dep.delay)}</div></div>
+      <div><div class="k">DÉPART</div><div class="v tn">${hm(c.dep.time)}${lateTag(c.dep.delay)}</div></div>
       <div class="mid tn">${dur(total)}<br>${dist ? km(dist) : '–'}<br>${dist && total ? Math.round(dist / (total / 3600)) + ' km/h' : ''}</div>
-      <div><div class="k">ARRIVÉE</div><div class="v tn">${hm(c.arr.time + c.arr.delay)}</div></div>
+      <div><div class="k">ARRIVÉE</div><div class="v tn">${hm(c.arr.time)}${lateTag(c.arr.delay)}</div></div>
     </div>
     ${ts ? `<div class="live-row"><i></i><span>${esc(ts.text)}</span><span>${S.live ? 'temps réel' : 'simulation'}</span></div>` : ''}
     <div>${c.legs.map((l, i) => {
@@ -997,7 +1010,7 @@ async function renderTrip(v) {
         const vi = vIdx(s);
         const past = st && vi >= 0 && (st.kind === 'done' || vi < st.idx || (vi === st.idx && st.kind === 'between'));
         const here = st && vi >= 0 && vi === st.idx && st.kind === 'at';
-        return `<li class="${end ? 'end' : ''} ${past ? 'past' : ''} ${here ? 'train-here' : ''}"><span class="tt tn">${t ? hm(t + d) : ''}${lateTag(d)}</span><span class="dot"></span><span class="sn">${esc(s.name || s.station)}</span><span class="pf">${end && s.platform ? 'voie ' + esc(s.platform) : ''}</span></li>`;
+        return `<li class="${end ? 'end' : ''} ${past ? 'past' : ''} ${here ? 'train-here' : ''}"><span class="tt tn">${t ? hm(t) : ''}${lateTag(d)}</span><span class="dot"></span><span class="sn">${esc(s.name || s.station)}</span><span class="pf">${end && s.platform ? 'voie ' + esc(s.platform) : ''}</span></li>`;
       }).join('')}${xfer}</ul>`;
     }).join('')}</div>
     <button class="btn lens ${isFavPair(c) ? 'on' : ''}" id="favTrip">${isFavPair(c) ? I.starF + ' Dans vos favoris' : I.star + ' Épingler ce trajet'}</button>
@@ -1035,16 +1048,16 @@ async function renderTrain(v) {
   const draw = (comp) => {
     const st = trainState(veh), stops = veh.stops;
     const first = stops[0], last = stops[stops.length - 1];
-    const d0 = first.dep + first.depDelay, d1 = last.arr + last.arrDelay;
+    const d0 = first.dep + first.depDelay, d1 = last.arr + last.arrDelay, s0 = first.dep, s1 = last.arr;
     const dist = routeKm(stops);
     const maxDelay = Math.max(...stops.map(s => Math.max(s.arrDelay || 0, s.depDelay || 0)));
     const curDelay = st ? (stops[st.idx]?.depDelay ?? 0) : 0;
     const nextStop = st && st.kind !== 'done' ? (st.kind === 'between' ? st.next : stops[Math.min(st.idx + (st.kind === 'at' ? 1 : 0), stops.length - 1)]) : null;
     body.innerHTML = `<div class="d-head"><span class="chip brand">SNCB</span>${chip(veh.short, veh.type)}${pill(st && st.kind !== 'before' ? curDelay : 0, stops.every(s => s.canceled))}</div>
-    <div class="ends"><div><div class="big tn">${hm(d0)}</div><div class="nm">${esc(first.name)}</div></div><div class="track"><span></span><span></span></div><div><div class="big tn">${hm(d1)}</div><div class="nm">${esc(last.name)}</div></div></div>
+    <div class="ends"><div><div class="big tn">${hm(s0)}</div><div class="nm">${esc(first.name)}</div></div><div class="track"><span></span><span></span></div><div><div class="big tn">${hm(s1)}</div><div class="nm">${esc(last.name)}</div></div></div>
     <div class="date">${esc(fD.format(new Date(first.dep * 1000)))}</div>
     <div><div class="art">${trainArt(comp?.material, veh.type)}</div><div class="model">${esc(comp === undefined ? 'Composition…' : matLabel(comp))}</div></div>
-    <div class="stats"><div><div class="k">DÉPART</div><div class="v tn">${hm(d0)}</div></div><div class="mid tn">${dur(d1 - d0)}<br>${km(dist)}<br>${Math.round(dist / Math.max(1, (d1 - d0) / 3600))} km/h</div><div><div class="k">ARRIVÉE</div><div class="v tn">${hm(d1)}</div></div></div>
+    <div class="stats"><div><div class="k">DÉPART</div><div class="v tn">${hm(s0)}${lateTag(first.depDelay)}</div></div><div class="mid tn">${dur(d1 - d0)}<br>${km(dist)}<br>${Math.round(dist / Math.max(1, (d1 - d0) / 3600))} km/h</div><div><div class="k">ARRIVÉE</div><div class="v tn">${hm(s1)}${lateTag(last.arrDelay)}</div></div></div>
     ${st ? `<div class="live-row"><i></i><span>${esc(nextStop && st.kind !== 'before' ? `Prochain arrêt : ${nextStop.name} ${hm((nextStop.arr ?? nextStop.dep) + (nextStop.arrDelay || 0))}` : st.text)}</span><span>${S.live ? 'temps réel' : 'simulation'}</span></div>` : ''}
     ${st ? `<div class="note">${esc(st.text)}${maxDelay >= 60 ? ` · retard max. observé ${Math.round(maxDelay / 60)} min` : ''}</div>` : ''}
     <ul class="tl">${stops.map((s, k) => {
@@ -1053,7 +1066,7 @@ async function renderTrain(v) {
       const past = st && (st.kind === 'done' || k < st.idx || (k === st.idx && st.kind === 'between'));
       const here = st && k === st.idx && st.kind === 'at';
       const mine = v.board && norm(s.name) === norm(v.board);
-      return `<li class="${end || mine ? 'end' : ''} ${past ? 'past' : ''} ${here ? 'train-here' : ''}"><span class="tt tn">${s.canceled ? '<s>' : ''}${t ? hm(t + (d || 0)) : ''}${s.canceled ? '</s>' : ''}${lateTag(d || 0)}</span><span class="dot"></span><span class="sn">${esc(s.name)}${s.canceled ? ' · supprimé' : ''}</span><span class="pf">${s.platform ? 'voie ' + esc(s.platform) : ''}</span></li>`;
+      return `<li class="${end || mine ? 'end' : ''} ${past ? 'past' : ''} ${here ? 'train-here' : ''}"><span class="tt tn">${s.canceled ? '<s>' : ''}${t ? hm(t) : ''}${s.canceled ? '</s>' : ''}${lateTag(d || 0)}</span><span class="dot"></span><span class="sn">${esc(s.name)}${s.canceled ? ' · supprimé' : ''}</span><span class="pf">${s.platform ? 'voie ' + esc(s.platform) : ''}</span></li>`;
     }).join('')}</ul>
     ${demoNote()}`;
     setRoute({ segments: [stops], ends: [first, last], labels: [first, last], train: st && st.kind !== 'done' && st.kind !== 'before' ? st.pos : null });
@@ -1094,7 +1107,7 @@ function renderBoardList() {
   if (!S.board.length) { box.innerHTML = `<div class="empty"><b>Aucun départ</b>Pas de train annoncé dans l'heure qui vient.</div>`; return; }
   box.innerHTML = `<div class="eyebrow">Prochains départs · mis à jour ${hm(nowS())}</div><div class="list" style="margin-top:8px">${S.board.map((d, i) => `
     <button class="card dep lens ${d.canceled ? 'cxl' : ''}" data-i="${i}">
-      <div class="t tn">${hm(d.time + d.delay)}${d.delay >= 60 ? `<span class="late ${d.delay >= 300 ? 'bad' : ''}">+${Math.round(d.delay / 60)} min</span>` : ''}</div>
+      <div class="t tn">${hm(d.time)}${d.delay >= 60 ? `<span class="late ${d.delay >= 300 ? 'bad' : ''}">+${Math.round(d.delay / 60)} min</span>` : ''}</div>
       <div style="min-width:0"><div class="dest">${esc(d.dest)}</div><div class="sub">${chip(d.short, d.type)}${d.canceled ? '<span class="pill bad" style="height:24px"><i></i>Supprimé</span>' : ''}</div></div>
       ${quai(d.platform, d.platformChanged)}
     </button>`).join('')}</div>`;
@@ -1145,7 +1158,10 @@ function openPicker(title, cb) {
 /* ================= Sheet drag ================= */
 (() => {
   const sheet = $('#sheet');
-  const snaps = () => { const avail = innerHeight - 92 - 80; return [0.36, 0.58, 0.95].map(f => Math.round(avail * f)); };
+  const snaps = () => {
+    const maxH = Math.round(innerHeight - 8 - ($('.top').getBoundingClientRect().bottom + 10));
+    return [Math.max(200, Math.round(maxH * 0.42)), Math.round(maxH * 0.66), maxH];
+  };
   let h = snaps()[1], start = null;
   const set = v => { h = v; sheet.style.setProperty('--sheet-h', v + 'px'); };
   set(h);
