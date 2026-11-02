@@ -17,5 +17,9 @@ Tout tient dans `index.html`, sans dépendance ni étape de build.
 - Itinéraire entre deux gares, en partant à ou en arrivant avant une heure donnée
 - Tableau des départs d'une gare, avec voie et changement de voie
 - Détail d'un train : arrêts, retards, position actuelle, composition (M7, AM08 Desiro, I11…)
-- Carte schématique du réseau belge, déplaçable et zoomable
+- Vraie carte détaillée (rues, villes, voies ferrées), avec le trajet et la position du train ; un schéma du réseau belge prend le relais si la carte ne charge pas
 - Trajets favoris et gares récentes, enregistrés sur l'appareil
+
+## Carte
+
+Affichage avec [MapLibre GL JS](https://maplibre.org/). Fonds de carte : [OpenFreeMap](https://openfreemap.org/) (mode clair) et [CARTO](https://carto.com/basemaps) (mode sombre). Données © les contributeurs [OpenStreetMap](https://www.openstreetmap.org/copyright).

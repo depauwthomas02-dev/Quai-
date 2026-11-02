@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0A5FC8">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
@@ -121,6 +122,20 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .status.demo { color: var(--warn); }
 .status:not(.demo) { color: var(--ok); }
 
+
+/* ---------- Vraie carte ---------- */
+#glmap { position: fixed; inset: 0; z-index: 0; opacity: 0; transition: opacity .6s ease; background: var(--land-out); }
+#glmap.on { opacity: 1; }
+.maplibregl-ctrl-top-left { top: calc(env(safe-area-inset-top, 0px) + 10px); left: max(12px, env(safe-area-inset-left, 0px)); }
+.maplibregl-ctrl-attrib.maplibregl-compact { background: var(--glass-strong); color: var(--ink-2); border-radius: 14px; box-shadow: 0 2px 8px var(--shade); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+.maplibregl-ctrl-attrib a { color: var(--ink-2); }
+.map-lbl { padding: 6px 11px; border-radius: 13px; font: 700 14px/1.1 var(--f-display); color: var(--ink); white-space: nowrap; pointer-events: none;
+  background: var(--glass-strong); -webkit-backdrop-filter: blur(14px) saturate(180%); backdrop-filter: blur(14px) saturate(180%); box-shadow: inset 0 1px 1px var(--rim), 0 4px 14px -2px var(--shade); }
+.map-train { width: 22px; height: 22px; border-radius: 50%; background: var(--route); border: 3px solid #fff; box-shadow: 0 2px 10px var(--shade); position: relative; }
+.map-train::after { content: ""; position: absolute; inset: -3px; border-radius: 50%; background: var(--route); z-index: -1; animation: pulse2 1.8s ease-out infinite; }
+@keyframes pulse2 { from { transform: scale(1); opacity: .5; } to { transform: scale(2.8); opacity: 0; } }
+.recenter { display: flex; align-items: center; gap: 7px; height: 40px; padding: 0 14px; border-radius: 20px; font-weight: 700; font-size: 14px; color: var(--accent); }
+
 /* ---------- Sheet ---------- */
 .sheet {
   position: fixed; z-index: 15; left: max(8px, env(safe-area-inset-left, 0px)); right: max(8px, env(safe-area-inset-right, 0px));
@@ -233,10 +248,10 @@ s.sched { color: var(--ink-3); font-size: .55em; font-weight: 600; text-decorati
 .art { margin: 4px -16px 0 0; overflow: hidden; }
 .art svg { display: block; width: 128%; max-width: none; height: auto; }
 .model { color: var(--ink-2); font-size: 15px; font-weight: 500; margin-top: 2px; }
-.stats { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: end; padding: 16px 18px; border-radius: 24px; background: var(--glass-inset); box-shadow: inset 0 1px 1px var(--rim), 0 1px 2px var(--hair); }
+.stats { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 10px; align-items: end; padding: 16px 18px; border-radius: 24px; background: var(--glass-inset); box-shadow: inset 0 1px 1px var(--rim), 0 1px 2px var(--hair); }
 .stats .k { font-size: 12px; font-weight: 700; letter-spacing: .12em; color: var(--ink-3); }
-.stats .v { font-family: var(--f-display); font-weight: 800; font-size: clamp(28px, 9vw, 40px); letter-spacing: -.03em; line-height: 1.05; margin-top: 4px; }
-.stats .mid { text-align: center; color: var(--ink-2); font-size: 14px; font-weight: 500; line-height: 1.45; padding-bottom: 4px; }
+.stats .v { font-family: var(--f-display); font-weight: 800; font-size: clamp(26px, 7.6vw, 40px); white-space: nowrap; letter-spacing: -.03em; line-height: 1.05; margin-top: 4px; }
+.stats .mid { text-align: center; color: var(--ink-2); font-size: 13.5px; font-weight: 500; line-height: 1.45; padding-bottom: 4px; white-space: nowrap; }
 .stats > div:last-child { text-align: right; }
 .live-row { display: flex; align-items: center; gap: 10px; padding: 14px 4px 2px; border-top: 1px solid var(--hair); font-weight: 700; font-size: 16px; }
 .live-row i { width: 10px; height: 10px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 4px var(--ok-bg); flex: none; }
@@ -367,6 +382,7 @@ s.sched { color: var(--ink-3); font-size: .55em; font-weight: 600; text-decorati
 <svg id="map" aria-label="Carte du réseau ferroviaire belge" role="img"></svg>
 
 <header class="top">
+  <button class="recenter glass lens" id="recenter" hidden aria-label="Recentrer la carte sur le trajet"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>Recentrer</button>
   <div class="status glass demo" id="status" role="status"><i></i><span>Connexion…</span></div>
 </header>
 
@@ -392,6 +408,7 @@ s.sched { color: var(--ink-3); font-size: .55em; font-weight: 600; text-decorati
 
 <div id="pickerHost"></div>
 
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script>
 (() => {
 'use strict';
@@ -757,6 +774,7 @@ function applyView() {
 }
 function visibleRegion() {
   const sh = $('#sheet').getBoundingClientRect(), top = $('.top').getBoundingClientRect();
+  const W = innerWidth, H = innerHeight;
   if (sh.width < W * 0.62) return { x0: sh.right + 16, y0: top.bottom + 12, x1: W - 16, y1: H - 24 };
   return { x0: 16, y0: top.bottom + 10, x1: W - 16, y1: Math.max(top.bottom + 80, sh.top - 10) };
 }
@@ -780,14 +798,135 @@ function animateTo(t, ms = 650) {
   };
   anim = requestAnimationFrame(step);
 }
-function refit(instant) {
+function refitSVG(instant) {
   if (!follow) return;
   const pts = focus && focus.length ? focus : BE.map(ll);
   const t = fitTarget(pts, focus && focus.length === 1 ? 0.06 : 0.03);
   if (focus && focus.length === 1) t.upp = Math.max(t.upp, 0.09);
   if (instant) { Object.assign(view, t); applyView(); } else animateTo(t);
 }
-function setRoute({ segments = [], dashed = null, ends = [], train = null, labels = [], pts = null }) {
+/* ================= Vraie carte (MapLibre) — le schéma SVG reste en secours ================= */
+const GL = { on: false, map: null, last: null, key: '', focus: null, follow: true, labels: [], train: null };
+const STYLES = { light: 'https://tiles.openfreemap.org/styles/liberty', dark: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json' };
+const BE_BOUNDS = [[2.5, 49.45], [6.45, 51.55]];
+const isDark = () => { const t = document.documentElement.dataset.theme; return t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches; };
+const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function hasWebGL() { try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch { return false; } }
+function glPad() {
+  const r = visibleRegion(), w = innerWidth, h = innerHeight;
+  const p = { top: r.y0 + 24, bottom: h - r.y1 + 24, left: r.x0 + 56, right: w - r.x1 + 56 };
+  if (p.top + p.bottom > h - 80) { const k = (h - 80) / (p.top + p.bottom); p.top *= k; p.bottom *= k; }
+  if (p.left + p.right > w - 80) { const k = (w - 80) / (p.left + p.right); p.left *= k; p.right *= k; }
+  return p;
+}
+function initGL() {
+  if (!window.maplibregl || !hasWebGL()) return;
+  const el = document.createElement('div'); el.id = 'glmap'; el.setAttribute('role', 'region'); el.setAttribute('aria-label', 'Carte');
+  svg.after(el);
+  let map;
+  try {
+    map = new maplibregl.Map({
+      container: el, style: STYLES[isDark() ? 'dark' : 'light'], bounds: BE_BOUNDS, fitBoundsOptions: { padding: glPad() },
+      attributionControl: false, dragRotate: false, pitchWithRotate: false, touchPitch: false, minZoom: 5, maxZoom: 17.5, fadeDuration: 150
+    });
+  } catch { el.remove(); return; }
+  map.touchZoomRotate.disableRotation();
+  map.addControl(new maplibregl.AttributionControl({ compact: true }), 'top-left');
+  GL.map = map;
+  // si la carte ne charge pas (hors ligne, service indisponible), on garde le schéma
+  const giveUp = setTimeout(() => { if (!GL.on) { try { map.remove(); } catch {} el.remove(); GL.map = null; } }, 9000);
+  map.on('style.load', () => {
+    tuneStyle(map); addRouteLayers(map);
+    if (!GL.on) { clearTimeout(giveUp); GL.on = true; el.classList.add('on'); setTimeout(() => { svg.style.visibility = 'hidden'; }, 600); }
+    GL.key = ''; GL.labels.forEach(m => m.remove()); GL.labels = [];
+    if (GL.last) setRouteGL(GL.last); else refitGL(true);
+  });
+  const userMove = e => { if (e.originalEvent && GL.follow) { GL.follow = false; $('#recenter').hidden = false; } };
+  map.on('dragstart', userMove); map.on('zoomstart', userMove);
+  const reTheme = () => { if (GL.map && GL.on) GL.map.setStyle(STYLES[isDark() ? 'dark' : 'light'], { diff: false }); };
+  try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', reTheme); } catch {}
+  new MutationObserver(reTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+}
+function firstSymbolId(map) { return (map.getStyle().layers || []).find(l => l.type === 'symbol')?.id; }
+function tuneStyle(map) {
+  const style = map.getStyle();
+  for (const l of style.layers || []) {
+    if (l.type !== 'symbol') continue;
+    try {
+      // noms en français quand ils existent (Bruxelles plutôt que « Bruxelles - Brussel »)
+      const tf = l.layout && l.layout['text-field'];
+      if (tf && /name/.test(JSON.stringify(tf)) && !/ref/.test(JSON.stringify(tf))) map.setLayoutProperty(l.id, 'text-field', ['coalesce', ['get', 'name:fr'], ['get', 'name_int'], ['get', 'name']]);
+      // moins de points d'intérêt : la carte sert à suivre le train
+      if (/poi|housenumber/i.test(l.id) && !/transit|rail|station/i.test(l.id)) map.setLayoutProperty(l.id, 'visibility', 'none');
+    } catch {}
+  }
+  // voies ferrées un peu plus marquées
+  const src = Object.entries(style.sources || {}).find(([, s]) => s.type === 'vector');
+  if (src) {
+    try {
+      map.addLayer({
+        id: 'q-rail', type: 'line', source: src[0], 'source-layer': 'transportation',
+        filter: ['all', ['==', ['get', 'class'], 'rail'], ['match', ['coalesce', ['get', 'subclass'], 'rail'], ['tram', 'subway', 'light_rail', 'funicular', 'monorail'], false, true]],
+        paint: { 'line-color': isDark() ? '#6B7884' : '#7E8C99', 'line-opacity': .75, 'line-width': ['interpolate', ['linear'], ['zoom'], 5, .5, 9, 1.2, 13, 2.2, 16, 3] }
+      }, firstSymbolId(map));
+    } catch {}
+  }
+}
+function addRouteLayers(map) {
+  const route = cssVar('--route') || '#0A5FC8', before = firstSymbolId(map);
+  map.addSource('q', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+  map.addLayer({ id: 'q-glow', type: 'line', source: 'q', filter: ['==', ['get', 'k'], 'seg'], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': route, 'line-opacity': .22, 'line-width': 14, 'line-blur': 3 } }, before);
+  map.addLayer({ id: 'q-line', type: 'line', source: 'q', filter: ['==', ['get', 'k'], 'seg'], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': route, 'line-width': ['interpolate', ['linear'], ['zoom'], 6, 3.5, 12, 6] } }, before);
+  map.addLayer({ id: 'q-dash', type: 'line', source: 'q', filter: ['==', ['get', 'k'], 'dash'], layout: { 'line-cap': 'round' }, paint: { 'line-color': route, 'line-width': 3, 'line-dasharray': [0.2, 2.2], 'line-opacity': .85 } }, before);
+  map.addLayer({ id: 'q-stop', type: 'circle', source: 'q', filter: ['==', ['get', 'k'], 'stop'], paint: { 'circle-radius': ['interpolate', ['linear'], ['zoom'], 7, 3, 12, 5.5], 'circle-color': '#fff', 'circle-stroke-color': route, 'circle-stroke-width': 2.5 } });
+  map.addLayer({ id: 'q-end', type: 'circle', source: 'q', filter: ['==', ['get', 'k'], 'end'], paint: { 'circle-radius': 7.5, 'circle-color': route, 'circle-stroke-color': '#fff', 'circle-stroke-width': 3 } });
+}
+function setRouteGL({ segments = [], dashed = null, ends = [], train = null, labels = [], pts = null }) {
+  const map = GL.map; if (!map) return;
+  const ok = s => s && s.lat && s.lon;
+  const P2 = s => [+s.lon, +s.lat];
+  const feats = [];
+  segments.forEach(seg => {
+    const c = seg.filter(ok).map(P2);
+    if (c.length > 1) feats.push({ type: 'Feature', properties: { k: 'seg' }, geometry: { type: 'LineString', coordinates: c } });
+    seg.forEach((s, i) => { if (i && i < seg.length - 1 && ok(s)) feats.push({ type: 'Feature', properties: { k: 'stop' }, geometry: { type: 'Point', coordinates: P2(s) } }); });
+  });
+  if (dashed && dashed.filter(ok).length > 1) feats.push({ type: 'Feature', properties: { k: 'dash' }, geometry: { type: 'LineString', coordinates: dashed.filter(ok).map(P2) } });
+  ends.filter(ok).forEach(s => feats.push({ type: 'Feature', properties: { k: 'end' }, geometry: { type: 'Point', coordinates: P2(s) } }));
+  map.getSource('q')?.setData({ type: 'FeatureCollection', features: feats });
+  const all = (pts || [...segments.flat(), ...(dashed || []), ...ends]).filter(ok);
+  const key = all.map(s => (+s.lat).toFixed(4) + ',' + (+s.lon).toFixed(4)).join(';') + '|' + labels.map(l => l.name || l.station).join(',');
+  if (key !== GL.key) {
+    GL.key = key; GL.focus = all;
+    GL.labels.forEach(m => m.remove()); GL.labels = [];
+    const lons = labels.filter(ok).map(s => +s.lon), mid = (Math.min(...lons) + Math.max(...lons)) / 2;
+    labels.filter(ok).forEach(s => {
+      const left = labels.length > 1 && +s.lon > mid;
+      const el = document.createElement('div'); el.className = 'map-lbl'; el.textContent = s.name || s.station;
+      GL.labels.push(new maplibregl.Marker({ element: el, anchor: left ? 'right' : 'left', offset: [left ? -14 : 14, 0] }).setLngLat(P2(s)).addTo(map));
+    });
+    GL.follow = true; $('#recenter').hidden = true; refitGL();
+  }
+  if (train && ok(train)) {
+    if (!GL.train) { const el = document.createElement('div'); el.className = 'map-train'; el.setAttribute('aria-label', 'Position du train'); GL.train = new maplibregl.Marker({ element: el }).setLngLat(P2(train)).addTo(map); }
+    else GL.train.setLngLat(P2(train));
+  } else if (GL.train) { GL.train.remove(); GL.train = null; }
+}
+function refitGL(instant) {
+  const map = GL.map; if (!map || !GL.follow) return;
+  const pad = glPad(), duration = instant || matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 800;
+  const pts = GL.focus && GL.focus.length ? GL.focus : null;
+  try {
+    if (!pts) return map.fitBounds(BE_BOUNDS, { padding: pad, duration });
+    const lons = pts.map(s => +s.lon), lats = pts.map(s => +s.lat);
+    if (Math.max(...lons) - Math.min(...lons) < 0.002 && Math.max(...lats) - Math.min(...lats) < 0.002) return map.easeTo({ center: [lons[0], lats[0]], zoom: 13.5, padding: pad, duration });
+    map.fitBounds([[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]], { padding: pad, maxZoom: 13.5, duration });
+  } catch {}
+}
+
+function refit(instant) { if (GL.on) refitGL(instant); else refitSVG(instant); }
+function setRoute(o) { GL.last = o; if (GL.on) setRouteGL(o); else setRouteSVG(o); }
+function setRouteSVG({ segments = [], dashed = null, ends = [], train = null, labels = [], pts = null }) {
   const g = $('#route');
   let h = '';
   segments.forEach(seg => { const d = pathD(seg.map(s => P(s.lat, s.lon))); h += `<path class="r-glow" d="${d}"/><path class="r-line" d="${d}"/>`; });
@@ -1490,13 +1629,15 @@ function openPicker(title, cb) {
   const move = e => { if (!start) return; const s = snaps(); set(Math.max(s[0] - 40, Math.min(s[2] + 20, start.h - (e.clientY - start.y)))); };
   const up = () => { if (!start) return; start = null; sheet.classList.remove('dragging'); const s = snaps(); set(s.reduce((a, b) => Math.abs(b - h) < Math.abs(a - h) ? b : a)); setTimeout(() => refit(), 460); };
   [$('#grab'), $('#sheetHead')].forEach(el => { el.addEventListener('pointerdown', down); el.addEventListener('pointermove', move); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up); });
-  addEventListener('resize', () => { const s = snaps(); set(s[1]); applyView(); refit(true); });
+  addEventListener('resize', () => { const s = snaps(); set(s[1]); if (GL.on) GL.map.resize(); else applyView(); refit(true); });
 })();
 
 /* ================= Boot ================= */
 async function boot() {
   drawBase();
   refit(true);
+  initGL();
+  $('#recenter').onclick = () => { GL.follow = true; follow = true; $('#recenter').hidden = true; refit(); };
   const od = store.get('od', null);
   S.from = findSt(od?.from || 'Bruxelles-Central'); S.to = findSt(od?.to || 'Gand-Saint-Pierre');
   S.boardSt = findSt(store.get('boardSt', 'Bruxelles-Central')) || byName.get('Bruxelles-Central');
