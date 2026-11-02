@@ -27,7 +27,7 @@
   --ok: #157A4C; --ok-bg: rgba(31,160,100,.16); --warn: #9A5A00; --warn-bg: rgba(240,160,30,.22); --bad: #B8261F; --bad-bg: rgba(220,60,50,.15);
   --chip: rgba(255,255,255,.78);
   --gap-edge: max(8px, env(safe-area-inset-left, 0px));
-  --dock-h: 62px; --dock-b: max(14px, calc(env(safe-area-inset-bottom, 0px) - 12px));
+  --dock-h: 62px; --dock-b: max(10px, calc(env(safe-area-inset-bottom, 0px) - 22px));
   --f-display: "Bricolage Grotesque", -apple-system, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
   --f-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, system-ui, sans-serif;
 }
@@ -109,7 +109,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .lens:active::after { opacity: 1; }
 
 /* ---------- Top bar ---------- */
-.top { position: fixed; z-index: 20; top: calc(env(safe-area-inset-top, 0px) + 10px); left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); display: flex; justify-content: space-between; align-items: center; gap: 10px; pointer-events: none; }
+.top { position: fixed; z-index: 20; top: calc(env(safe-area-inset-top, 0px) + 10px); left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); display: flex; justify-content: flex-end; align-items: center; gap: 10px; pointer-events: none; }
 .top > * { pointer-events: auto; }
 .brand { display: flex; align-items: center; gap: 9px; height: 46px; padding: 0 16px 0 7px; border-radius: 23px; }
 .brand-mark { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: #fff; box-shadow: inset 0 1px 1px rgba(255,255,255,.5); }
@@ -302,12 +302,6 @@ s.sched { color: var(--ink-3); font-size: .55em; font-weight: 600; text-decorati
 <svg id="map" aria-label="Carte du réseau ferroviaire belge" role="img"></svg>
 
 <header class="top">
-  <div class="brand glass">
-    <span class="brand-mark" aria-hidden="true">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="14" rx="4"/><path d="M5 11h14M9 21l-2-2M15 21l2-2"/><circle cx="9" cy="14" r=".6" fill="currentColor"/><circle cx="15" cy="14" r=".6" fill="currentColor"/></svg>
-    </span>
-    <div><b>Quai</b><small>Trains SNCB · NMBS</small></div>
-  </div>
   <div class="status glass demo" id="status" role="status"><i></i><span>Connexion…</span></div>
 </header>
 
