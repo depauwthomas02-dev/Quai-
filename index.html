@@ -277,6 +277,47 @@ s.sched { color: var(--ink-3); font-size: .55em; font-weight: 600; text-decorati
 .demo-note { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 18px; background: var(--warn-bg); color: var(--ink); font-size: 13.5px; line-height: 1.45; }
 .demo-note svg { flex: none; color: var(--warn); margin-top: 1px; }
 
+
+/* ---------- Composition ---------- */
+.compo { display: flex; flex-direction: column; gap: 12px; }
+.compo-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.compo-top h3 { margin: 0; font-family: var(--f-display); font-weight: 800; font-size: 21px; letter-spacing: -.02em; }
+.compo-route { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-weight: 600; color: var(--ink-2); font-size: 15px; }
+.first-hint { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 12px 14px; border-radius: 18px; background: var(--glass-inset); box-shadow: inset 0 1px 1px var(--rim), 0 1px 2px var(--hair); font-weight: 700; font-size: 15px; line-height: 1.3; }
+.first-hint small { display: block; font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 1px; }
+.first-hint .go { margin-left: auto; color: var(--accent); display: flex; align-items: center; gap: 2px; white-space: nowrap; }
+.first-hint:disabled { cursor: default; }
+.first-hint:disabled .cls.one { background: var(--chip); color: var(--ink-3); box-shadow: inset 0 0 0 1px var(--hair); }
+.strip-wrap { margin: 0 -16px; }
+.strip-cap { display: flex; align-items: center; gap: 5px; padding: 0 18px 4px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+.strip { display: flex; align-items: flex-end; gap: 2px; overflow-x: auto; padding: 2px 16px 6px; scroll-snap-type: x proximity; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.strip::-webkit-scrollbar { display: none; }
+.car { flex: none; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 4px 8px; border-radius: 18px; scroll-snap-align: center; transition: background-color .2s, box-shadow .2s; }
+.car svg { display: block; height: 82px; width: auto; max-width: none; }
+.car.sel { background: var(--accent-soft); box-shadow: inset 0 0 0 2px var(--accent); }
+.car-am { height: 20px; display: flex; gap: 6px; align-items: center; color: var(--ink-2); }
+.car-am svg { width: 18px; height: 18px; }
+.car-lbl { display: flex; align-items: center; gap: 5px; min-height: 24px; }
+.car-lbl b { font-family: var(--f-display); font-size: 17px; font-weight: 800; min-width: 14px; text-align: center; }
+.cls { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 7px; font-size: 12.5px; font-weight: 800; background: var(--chip); color: var(--ink-2); box-shadow: inset 0 0 0 1px var(--hair); white-space: nowrap; }
+.cls.one { background: #F4C20D; color: #1B1A12; box-shadow: none; }
+.cls.big { height: 34px; min-width: 42px; justify-content: center; border-radius: 11px; font-size: 14px; }
+.cls.loco { background: var(--chip); }
+.facts { display: flex; flex-wrap: wrap; gap: 8px; }
+.fact { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 12px; background: var(--glass-inset); box-shadow: inset 0 0 0 1px var(--hair); font-weight: 600; font-size: 14px; white-space: nowrap; }
+.fact svg { width: 18px; height: 18px; color: var(--ink-2); flex: none; }
+.fact.occ.ok { color: var(--ok); background: var(--ok-bg); } .fact.occ.warn { color: var(--warn); background: var(--warn-bg); } .fact.occ.bad { color: var(--bad); background: var(--bad-bg); }
+.fact.occ svg { color: currentColor; }
+.car-card { padding: 14px 16px; border-radius: 20px; background: var(--glass-inset); box-shadow: inset 0 1px 1px var(--rim), 0 1px 2px var(--hair); }
+.cc-h { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cc-h b { font-family: var(--f-display); font-size: 19px; font-weight: 800; }
+.cc-m { margin-left: auto; color: var(--ink-3); font-size: 13px; font-weight: 600; }
+.cc-s { margin-top: 8px; color: var(--ink-2); font-size: 14.5px; }
+.cc-s b { color: var(--ink); }
+.cc-am { list-style: none; margin: 12px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px 12px; }
+.cc-am li { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 600; min-width: 0; }
+.cc-am li svg { width: 20px; height: 20px; flex: none; color: var(--accent); }
+
 /* ---------- Station picker ---------- */
 .picker { position: fixed; z-index: 40; inset: 0; display: flex; flex-direction: column; padding: calc(env(safe-area-inset-top, 0px) + 14px) max(16px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 10px) max(16px, env(safe-area-inset-left, 0px)); background: var(--glass); -webkit-backdrop-filter: blur(30px) saturate(180%); backdrop-filter: blur(30px) saturate(180%); animation: fadeIn .25s ease; }
 @keyframes fadeIn { from { opacity: 0; } }
@@ -499,7 +540,7 @@ const Demo = (() => {
         earliest = v.stops[k2].arr + v.stops[k2].arrDelay + 360;
       }
       start = legsOut[0].from.time + 60;
-      const c = buildConn(legsOut);
+      const c = buildConn(legsOut); c.occ = demoOcc(c.id);
       if (sel === 'arrival' && c.arr.time > t) break;
       out.push(c);
     }
@@ -513,7 +554,7 @@ const Demo = (() => {
       let T0 = nextRun(L, dir, k, t - 120);
       for (let n = 0; n < 3; n++, T0 += L.period) {
         const v = vehicle(L, dir, T0); const s = v.stops[k];
-        res.push({ time: s.dep, delay: s.depDelay, dest: v.direction, short: v.short, type: v.type, platform: s.platform, platformChanged: hash(v.id) % 17 === 0, canceled: false, vehicleId: v.id, date: s.dep });
+        res.push({ time: s.dep, delay: s.depDelay, dest: v.direction, short: v.short, type: v.type, platform: s.platform, platformChanged: hash(v.id) % 17 === 0, canceled: false, vehicleId: v.id, date: s.dep, occ: demoOcc(v.id) });
       }
     }));
     return res.sort((a, b) => a.time - b.time).filter(d => d.time + d.delay >= t - 60).slice(0, 14);
@@ -570,19 +611,19 @@ const Live = {
         const veh = a.vehicleinfo || {}; const vid = a.vehicle || veh.name;
         legs.push({
           vehicleId: vid, short: veh.shortname || String(vid || '').replace('BE.NMBS.', ''), type: veh.type || (String(vid).match(/BE\.NMBS\.([A-Z]+)/) || [])[1] || '', number: veh.number,
-          direction: a.direction?.name || '',
+          direction: a.direction?.name || '', occ: occOf(a.occupancy),
           from: { ...sinfo(infos[i], names[i]), time: num(a.time), delay: num(a.delay), platform: a.platform, platformChanged: a.platforminfo?.normal === '0', canceled: a.canceled === '1' },
           to: { ...sinfo(infos[i + 1], names[i + 1]), time: num(b.time), delay: num(b.delay), platform: b.platform, platformChanged: b.platforminfo?.normal === '0', canceled: b.canceled === '1' },
         });
       }
-      return buildConn(legs);
+      const cc = buildConn(legs); cc.occ = occOf(c.occupancy) || occOf(c.departure?.occupancy); return cc;
     });
   },
   async board(station) {
     const r = await api('/liveboard/', { id: station.id, station: station.id ? null : station.name, arrdep: 'departure' });
     return arr(r.departures?.departure).map(d => ({
       time: num(d.time), delay: num(d.delay), dest: d.station, short: d.vehicleinfo?.shortname || String(d.vehicle).replace('BE.NMBS.', ''), type: d.vehicleinfo?.type || '',
-      platform: d.platform, platformChanged: d.platforminfo?.normal === '0', canceled: d.canceled === '1', vehicleId: d.vehicle, date: num(d.time)
+      platform: d.platform, platformChanged: d.platforminfo?.normal === '0', canceled: d.canceled === '1', vehicleId: d.vehicle, date: num(d.time), occ: occOf(d.occupancy)
     }));
   },
   async vehicle(id, date) {
@@ -598,15 +639,10 @@ const Live = {
     stops.forEach(s => { if (!s.arr && !s.dep) s.dep = null; });
     return { id: r.vehicle || id, short: vi.shortname || id.replace('BE.NMBS.', ''), type: vi.type || '', number: vi.number, direction: stops.length ? stops[stops.length - 1].name : '', stops };
   },
-  async composition(short) {
-    const r = await api('/composition/', { id: String(short).replace(/\s+/g, '') });
-    const seg = arr(r.composition?.segments?.segment)[0];
-    const units = arr(seg?.composition?.units?.unit);
-    const types = units.map(u => u.materialType?.parent_type).filter(Boolean);
-    if (!types.length) return null;
-    const cnt = {}; types.forEach(t => cnt[t] = (cnt[t] || 0) + 1);
-    const main = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0][0];
-    return { material: main, units: units.length };
+  async composition(v) {
+    const ids = [...new Set([String(v.short || '').replace(/\s+/g, ''), v.type && v.number ? String(v.type).replace(/\d+$/, '') + v.number : null, v.number].filter(Boolean))];
+    for (const id of ids) { try { const c = parseComp(await api('/composition/', { id })); if (c) return c; } catch {} }
+    return null;
   }
 };
 
@@ -636,9 +672,9 @@ async function getVehicle(id, date) {
   return v;
 }
 async function getComposition(v) {
-  if (!S.live) return { material: v.material, units: v.units };
+  if (!S.live) return demoComp(v);
   if (S.compCache.has(v.short)) return S.compCache.get(v.short);
-  let c = null; try { c = await Live.composition(v.short); } catch {}
+  let c = null; try { c = await Live.composition(v); } catch {}
   S.compCache.set(v.short, c); return c;
 }
 
@@ -840,6 +876,236 @@ function trainArt(material, type) {
 const MATERIAL = { AM08: 'AM08 Desiro', AM96: 'AM96', AM86: 'AM86', AM80: 'AM80 Break', M7: 'M7 à double étage', M6: 'M6 à double étage', M5: 'M5 à double étage', M4: 'Voitures M4', I11: 'Voitures I11', I10: 'Voitures I10', I6: 'Voitures I6', HLE18: 'Locomotive HLE 18' };
 const matLabel = c => c ? (MATERIAL[c.material] || c.material) + (c.units ? ` · ${c.units} ${c.units > 1 ? 'voitures' : 'voiture'}` : '') : 'Composition non communiquée';
 
+/* ================= Composition ================= */
+const flag = v => v === true || v === 1 || v === '1' || v === 'true';
+const occOf = o => { const n = String((o && (o.name || o['@id'])) || '').split('/').pop().toLowerCase(); return ['low', 'medium', 'high'].includes(n) ? n : null; };
+const OCC = { low: ['Affluence faible', 'ok'], medium: ['Affluence moyenne', 'warn'], high: ['Forte affluence', 'bad'] };
+const SET_SIZE = { AM08: 3, AM96: 3, AM80: 3, AM86: 2, AM75: 4, AM62: 2, AM66: 2, AM70: 2, AM73: 2 };
+const isLoco = u => /^(HLE|HLD|HVM|HL)/.test(u.parent) || /^HLE/.test(u.traction);
+// 1st class comes from seat counts; the class letter of the sub-type (A = 1re, B = 2e, AB = mixte) is only a fallback
+const CLS_RE = /^(A|AB|B)(?:[DUXHMS]|$)/i;
+const isFirst = u => u.kind !== 'loco' && (u.seatData ? u.first > 0 : /^A/i.test((u.sub.match(CLS_RE) || [''])[0]));
+const isMixed = u => isFirst(u) && (u.seatData ? u.second > 0 : /^AB/i.test(u.sub));
+function unitOf(u) {
+  const m = u.materialType || {};
+  return {
+    parent: String(m.parent_type || '').toUpperCase(), sub: String(m.sub_type || ''), traction: String(u.tractionType || '').toUpperCase(),
+    first: num(u.seatsFirstClass) + num(u.seatsCoupeFirstClass), second: num(u.seatsSecondClass) + num(u.seatsCoupeSecondClass),
+    wc: flag(u.hasToilets), pmr: flag(u.hasPrmSection) || flag(u.hasPrmToilets), bike: flag(u.hasBikeSection), airco: flag(u.hasAirco), heat: flag(u.hasHeating),
+    plug: flag(u.hasSecondClassOutlets) || flag(u.hasFirstClassOutlets), luggage: flag(u.hasLuggageSection), prio: flag(u.hasPriorityPlaces),
+    len: num(u.lengthInMeter)
+  };
+}
+function annotate(units) {
+  const n = units.length;
+  units.forEach((u, i) => {
+    u.kind = isLoco(u) ? 'loco' : /^AM|^MS|^MW/.test(u.parent) ? 'emu' : /^M[5-7]/.test(u.parent) ? 'dd' : 'coach';
+    u.cabL = u.cabR = false;
+  });
+  // EMU sets: cab at both ends of each set
+  for (let i = 0; i < n;) {
+    const u = units[i];
+    if (u.kind !== 'emu') { i++; continue; }
+    const size = SET_SIZE[u.parent.slice(0, 4)] || 3;
+    let j = i; while (j < n && j - i < size && units[j].kind === 'emu' && units[j].parent === u.parent) j++;
+    units[i].cabL = true; units[j - 1].cabR = true;
+    for (let k = i; k < j; k++) units[k].panto = !units[k].cabL && !units[k].cabR || (j - i === 2 && k === i);
+    units[i].nose = units[j - 1].nose = /^AM08/.test(u.parent) ? 'desiro' : 'blunt';
+    i = j;
+  }
+  units.forEach((u, i) => {
+    if ((u.kind === 'dd' || u.kind === 'coach') && /x/i.test(u.sub)) { if (i === 0) u.cabL = true; else if (i === n - 1) u.cabR = true; }
+    u.nose = u.nose || (u.kind === 'dd' ? 'dd' : 'blunt');
+  });
+  const seatData = units.some(u => u.first > 0 || u.second > 0);
+  let no = 0; units.forEach(u => { u.seatData = seatData; u.no = u.kind === 'loco' ? null : ++no; });
+  return units;
+}
+function compFrom(segments) {
+  segments = segments.filter(s => s.units.length);
+  if (!segments.length) return null;
+  segments.forEach(s => annotate(s.units));
+  const cnt = {}; segments[0].units.filter(u => u.kind !== 'loco').forEach(u => cnt[u.parent] = (cnt[u.parent] || 0) + 1);
+  const main = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0];
+  return { segments, material: main ? main[0] : segments[0].units[0].parent };
+}
+function parseComp(r) {
+  return compFrom(arr(r.composition?.segments?.segment).map(seg => ({
+    from: seg.origin?.name || seg.origin?.standardname || '', to: seg.destination?.name || seg.destination?.standardname || '',
+    units: arr(seg.composition?.units?.unit).map(unitOf)
+  })));
+}
+function demoComp(v) {
+  const h = hash(v.id);
+  const base = { first: 0, second: 0, wc: false, pmr: false, bike: false, airco: true, heat: true, plug: false, luggage: false, prio: false, len: 26, traction: '' };
+  const U = (parent, sub, o = {}) => ({ ...base, parent, sub, ...o });
+  let units;
+  if (v.material === 'AM08') {
+    const set = () => [U('AM08', 'a', { second: 80, wc: true, pmr: true, bike: true, plug: true, prio: true }), U('AM08', 'b', { second: 96, plug: true }), U('AM08', 'c', { first: 24, second: 56, plug: true })];
+    units = h % 3 === 0 ? [...set(), ...set()] : set();
+  } else if (v.material === 'M7') {
+    units = [U('M7', 'BMX', { second: 90, bike: true, pmr: true, wc: true, prio: true }), U('M7', 'B', { second: 140 }), U('M7', 'AB', { first: 64, second: 56, wc: true, plug: true }), U('M7', 'B', { second: 140, wc: true }), U('M7', 'B', { second: 140 }), U('HLE18', '', { traction: 'HLE', airco: false, heat: false, len: 19 })];
+  } else {
+    units = [U('HLE18', '', { traction: 'HLE', airco: false, heat: false, len: 19 }), U('I11', 'B', { second: 80, wc: true }), U('I11', 'B', { second: 80 }), U('I11', 'A', { first: 56, wc: true, plug: true }), U('I11', 'B', { second: 80, wc: true }), U('I11', 'BDx', { second: 56, bike: true, pmr: true, luggage: true })];
+  }
+  const st = v.stops;
+  return compFrom([{ from: st[0].name, to: st[st.length - 1].name, units }]);
+}
+const demoOcc = id => ['low', 'low', 'medium', 'low', 'high', 'medium'][hash(id + 'o') % 6];
+
+/* ---- car drawings (side view, nose on the left; right cabs are mirrored) ---- */
+const TC = { body: '#F3F5F7', edge: '#C4CBD2', roof: '#A3ABB3', roofD: '#868F98', glass: '#3C85D7', cab: '#18222D', door: '#D2252D', navy: '#233179', yellow: '#F4C20D', under: '#22272D', wheel: '#14181C', band: '#3A4149' };
+const bogie = (x, y = 92) => `<rect x="${x}" y="${y}" width="54" height="7" rx="3" fill="${TC.under}"/><circle cx="${x + 12}" cy="${y + 8}" r="7.5" fill="${TC.wheel}" stroke="#5B636B" stroke-width="1.5"/><circle cx="${x + 42}" cy="${y + 8}" r="7.5" fill="${TC.wheel}" stroke="#5B636B" stroke-width="1.5"/>`;
+const doorEl = (x, y, h) => `<rect x="${x}" y="${y}" width="30" height="${h}" rx="2" fill="${TC.door}"/><rect x="${x + 4}" y="${y + 6}" width="9" height="${Math.min(24, h - 16)}" rx="2" fill="${TC.glass}"/><rect x="${x + 17}" y="${y + 6}" width="9" height="${Math.min(24, h - 16)}" rx="2" fill="${TC.glass}"/><path d="M${x + 15} ${y}v${h}" stroke="#9E1A20" stroke-width="1"/>`;
+const win = (x, y, w, h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="${TC.glass}"/><rect x="${x + 2}" y="${y + 2}" width="${Math.max(2, w * .35)}" height="2" rx="1" fill="#fff" opacity=".35"/>`;
+function carBody(u) {
+  const first = isFirst(u);
+  const W = u.kind === 'loco' ? 232 : 300;
+  let g = '';
+  if (u.kind === 'loco') {
+    g = `<path d="M30 26H202Q224 28 228 52L230 86Q230 92 224 92H8Q2 92 2 86L4 52Q8 28 30 26Z" fill="${TC.body}" stroke="${TC.edge}"/>
+      <path d="M40 20H192V27H40Z" fill="${TC.roof}"/><path d="M70 20l14-12h26M162 20l-14-12h-26" fill="none" stroke="#6E7780" stroke-width="2"/>
+      <path d="M4 52Q8 30 30 27" fill="none" stroke="${TC.yellow}" stroke-width="5"/><path d="M228 52Q224 30 202 27" fill="none" stroke="${TC.yellow}" stroke-width="5"/>
+      <path d="M9 52Q13 34 30 32H36V52Z" fill="${TC.cab}"/><path d="M223 52Q219 34 202 32H196V52Z" fill="${TC.cab}"/>
+      <rect x="44" y="40" width="144" height="24" fill="${TC.band}"/><rect x="44" y="40" width="144" height="2.5" fill="${TC.door}"/>
+      ${[56, 70, 84, 140, 154, 168].map(x => `<path d="M${x} 46v14" stroke="#596169" stroke-width="3"/>`).join('')}
+      <rect x="2" y="70" width="26" height="16" rx="2" fill="${TC.yellow}"/><rect x="204" y="70" width="26" height="16" rx="2" fill="${TC.yellow}"/>
+      <rect x="36" y="36" width="1.5" height="54" fill="${TC.edge}"/><rect x="194" y="36" width="1.5" height="54" fill="${TC.edge}"/>
+      <rect x="6" y="88" width="220" height="5" fill="${TC.under}"/>${bogie(24)}${bogie(154)}`;
+    return { W, g };
+  }
+  if (u.kind === 'dd') {
+    const cab = u.cabL || u.cabR;
+    const outline = cab ? `M40 14H294Q300 14 300 20V84H248V100H52V84H6Q2 84 2 78L6 48Q14 18 40 14Z` : `M6 14H294Q300 14 300 20V84H248V100H52V84H0V20Q0 14 6 14Z`;
+    g = `<path d="${cab ? 'M44 8H290Q296 8 296 14H40Z' : 'M8 8H292Q298 8 298 14H2Q2 8 8 8Z'}" fill="${TC.roof}"/>
+      <path d="${outline}" fill="${TC.body}" stroke="${TC.edge}"/>
+      ${first ? `<rect x="60" y="17" width="180" height="3" fill="${TC.yellow}"/>` : ''}
+      ${[62, 104, 146, 188].map(x => win(x, 23, 36, 15)).join('')}${[100, 142, 184].map(x => win(x, 64, 36, 17)).join('')}
+      ${cab ? '' : win(8, 26, 34, 14) + win(8, 50, 34, 14)}${win(258, 26, 34, 14)}${win(258, 50, 34, 14)}
+      ${doorEl(56, 52, 46)}${doorEl(214, 52, 46)}
+      <rect x="52" y="94" width="196" height="4" fill="${TC.navy}"/><rect x="${cab ? 4 : 0}" y="78" width="${cab ? 48 : 52}" height="4" fill="${TC.navy}"/><rect x="248" y="78" width="52" height="4" fill="${TC.navy}"/>
+      ${cab ? `<path d="M10 48Q17 24 40 19H48V48Z" fill="${TC.cab}"/><path d="M6 48Q14 20 40 15" fill="none" stroke="${TC.yellow}" stroke-width="4"/><path d="M2 78L5 58H24V84H6Q2 84 2 78Z" fill="${TC.yellow}"/>` : ''}
+      ${bogie(2, 82)}${bogie(244, 82)}`;
+    return { W, g };
+  }
+  if (u.kind === 'emu') {
+    const cab = u.cabL || u.cabR;
+    let nose = '', outline = 'M0 30H300V92H0Z';
+    if (cab && u.nose === 'desiro') {
+      outline = 'M44 30H300V92H8Q2 92 3 85L8 62Q16 36 44 30Z';
+      nose = `<path d="M13 60Q20 40 44 34H52V60Z" fill="${TC.cab}"/><path d="M8 62Q16 36 44 31" fill="none" stroke="${TC.yellow}" stroke-width="4.5"/><path d="M3 85L7 66H26V92H8Q2 92 3 85Z" fill="${TC.yellow}"/><rect x="9" y="76" width="9" height="4" rx="2" fill="#fff"/>`;
+    } else if (cab) {
+      outline = 'M16 30H300V92H6Q2 92 2 86V44Q2 30 16 30Z';
+      nose = `<path d="M4 44Q4 35 16 35H26V60H4Z" fill="${TC.cab}"/><path d="M2 86V64H20V92H6Q2 92 2 86Z" fill="${TC.yellow}"/><rect x="2" y="61" width="24" height="3" fill="${TC.door}"/>`;
+    }
+    const x0 = cab ? (u.nose === 'desiro' ? 58 : 32) : 8;
+    g = `<path d="M${cab ? 46 : 4} 24H296V31H${cab ? 40 : 4}Z" fill="${TC.roof}"/>
+      ${u.panto ? `<rect x="118" y="17" width="64" height="8" rx="2" fill="${TC.roofD}"/><path d="M128 17l22-13h34M150 4l14 13" fill="none" stroke="#6E7780" stroke-width="2"/>` : `<rect x="120" y="19" width="56" height="6" rx="2" fill="${TC.roofD}"/>`}
+      <path d="${outline}" fill="${TC.body}" stroke="${TC.edge}"/>
+      ${first ? `<rect x="${cab ? 100 : 98}" y="37" width="126" height="3" fill="${TC.yellow}"/>` : ''}
+      ${x0 < 60 && !cab ? win(x0, 43, 46, 20) : ''}${[100, 142, 184].map(x => win(x, 43, 38, 20)).join('')}${win(268, 43, 26, 20)}
+      ${doorEl(64, 36, 56)}${doorEl(230, 36, 56)}
+      <rect x="${cab ? 4 : 0}" y="84" width="${cab ? 296 : 300}" height="4" fill="${TC.navy}"/>${nose}
+      <rect x="4" y="91" width="292" height="4" fill="${TC.under}"/>${bogie(22)}${bogie(226)}`;
+    return { W, g };
+  }
+  // single-deck coach (I10/I11/M4…)
+  const cab = u.cabL || u.cabR;
+  g = `<path d="M${cab ? 30 : 6} 23H294V30H${cab ? 26 : 6}Z" fill="${TC.roof}"/>
+    <path d="${cab ? 'M20 30H300V92H6Q2 92 2 86V46Q4 30 20 30Z' : 'M0 30H300V92H0Z'}" fill="${TC.body}" stroke="${TC.edge}"/>
+    ${first ? `<rect x="44" y="37" width="214" height="3" fill="${TC.yellow}"/>` : ''}
+    ${[48, 92, 136, 180, 224].map(x => win(x, 43, 36, 20)).join('')}
+    ${doorEl(8 + (cab ? 26 : 0), 36, 56).replace(/width="30"/, 'width="30"')}${doorEl(262, 36, 56)}
+    <rect x="${cab ? 4 : 0}" y="84" width="${cab ? 296 : 300}" height="4" fill="${TC.navy}"/>
+    ${cab ? `<path d="M4 46Q6 35 20 35H28V60H4Z" fill="${TC.cab}"/><path d="M2 86V64H22V92H6Q2 92 2 86Z" fill="${TC.yellow}"/>` : ''}
+    <rect x="4" y="91" width="292" height="4" fill="${TC.under}"/>${bogie(24)}${bogie(222)}`;
+  return { W, g };
+}
+function carSVG(u) {
+  const { W, g } = carBody(u);
+  const body = u.cabR && !u.cabL ? `<g transform="translate(${W} 0) scale(-1 1)">${g}</g>` : g;
+  return `<svg viewBox="0 -2 ${W} 112" width="${W}" height="112" aria-hidden="true">${body}</svg>`;
+}
+
+/* ---- composition UI ---- */
+const AI = {
+  wc: '<svg viewBox="0 0 24 24"><text x="12" y="16.5" text-anchor="middle" font-size="10.5" font-weight="800" font-family="system-ui,-apple-system,sans-serif" fill="currentColor">WC</text></svg>',
+  pmr: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="4" r="1.6" fill="currentColor" stroke="none"/><path d="M11 7.5V13h5l2.5 5.5"/><path d="M8 10.2a5.5 5.5 0 1 0 7.6 7.3"/></svg>',
+  bike: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="16" r="3.5"/><circle cx="18.5" cy="16" r="3.5"/><path d="M5.5 16 9 9h6l3.5 7M9 9 8 6.5H6M15 9l-3 7h-6.5"/></svg>',
+  airco: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.5 4.5 12 6l2.5-1.5M9.5 19.5 12 18l2.5 1.5"/></svg>',
+  heat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.8V5a2 2 0 0 0-4 0v9.8a4 4 0 1 0 4 0Z"/><path d="M12 17.5v-6"/></svg>',
+  plug: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v5M15 3v5M7 8h10v3a5 5 0 0 1-10 0V8ZM12 16v5"/></svg>',
+  luggage: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="7" width="14" height="13" rx="2"/><path d="M9 7V4h6v3M9.5 11v5M14.5 11v5"/></svg>',
+  prio: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v9h8l2 7M7 13a5 5 0 0 0 5 5"/><circle cx="7" cy="2.5" r="0.5" fill="currentColor"/></svg>',
+  people: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M2.8 20a6.2 6.2 0 0 1 12.4 0"/><circle cx="17.5" cy="9" r="2.6"/><path d="M16.5 14.3A5 5 0 0 1 22 19"/></svg>',
+  train: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="14" rx="4"/><path d="M5 11h14M9 21l-2-2M15 21l2-2"/></svg>',
+  head: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>',
+};
+const AMEN = [['airco', 'Air conditionné'], ['heat', 'Chauffage'], ['plug', 'Prises de courant'], ['wc', 'Toilettes'], ['pmr', 'Accès fauteuil roulant'], ['bike', 'Emplacement vélo'], ['luggage', 'Espace bagages'], ['prio', 'Places prioritaires']];
+const MAT = { AM08: 'AM08 Desiro', AM96: 'AM96', AM86: 'AM86', AM80: 'AM80 Break', AM75: 'AM75', M7: 'M7 à double étage', M6: 'M6 à double étage', M5: 'M5 à double étage', M4: 'M4', I11: 'I11', I10: 'I10', I6: 'I6', HLE18: 'HLE 18', HLE19: 'HLE 19', HLE13: 'HLE 13', HLE21: 'HLE 21', HLE27: 'HLE 27' };
+const matName = p => MAT[p] || MAT[String(p).replace(/[^A-Z0-9].*$/, '')] || p;
+const listFr = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' et ' + a[a.length - 1];
+function firstHint(units) {
+  const cars = units.filter(u => u.kind !== 'loco'), firsts = cars.filter(isFirst);
+  if (!cars.some(u => u.seatData || CLS_RE.test(u.sub))) return { text: "Emplacement de la 1re classe non communiqué", known: false };
+  if (!firsts.length) return { text: 'Pas de 1re classe dans ce train', known: false };
+  const pos = firsts.map(u => (u.no - 0.5) / cars.length);
+  const spread = Math.max(...pos) - Math.min(...pos);
+  const where = spread > 0.5 ? 'à plusieurs endroits du train' : (pos.reduce((a, b) => a + b, 0) / pos.length) < 0.34 ? 'en tête du train' : (pos.reduce((a, b) => a + b, 0) / pos.length) > 0.66 ? 'en queue du train' : 'au milieu du train';
+  return { text: `${firsts.length > 1 ? 'Voitures' : 'Voiture'} ${listFr(firsts.map(u => u.no))}, ${where}`, known: true, target: firsts[0] };
+}
+function compoHTML(comp, view, occ, type) {
+  const occFact = occ ? `<span class="fact occ ${OCC[occ][1]}">${AI.people}${OCC[occ][0]}</span>` : '';
+  if (comp === undefined) return `<section class="compo" id="compo"><div class="compo-top"><h3>Composition</h3></div><div class="skel" style="height:150px"></div></section>`;
+  if (!comp) return `<section class="compo" id="compo"><div class="compo-top"><h3>Composition</h3></div><div class="art">${trainArt(null, type)}</div><div class="note">La composition de ce train n'est pas communiquée.</div>${occFact ? `<div class="facts">${occFact}</div>` : ''}</section>`;
+  const si = Math.min(view.seg || 0, comp.segments.length - 1), seg = comp.segments[si], units = seg.units;
+  const cars = units.filter(u => u.kind !== 'loco'), locos = units.filter(u => u.kind === 'loco');
+  const hint = firstHint(units);
+  if (view.selCar == null || !units[view.selCar]) view.selCar = hint.target ? units.indexOf(hint.target) : units.findIndex(u => u.kind !== 'loco');
+  const sel = units[view.selCar];
+  const has = k => units.some(u => u[k]);
+  const mats = [...new Set(cars.map(u => u.parent))].map(matName);
+  const facts = [`<span class="fact">${AI.train}${cars.length} voiture${cars.length > 1 ? 's' : ''}</span>`,
+    `<span class="fact">${esc(listFr(mats))}${locos.length ? ' + ' + esc(matName(locos[0].parent)) : ''}</span>`,
+    ...AMEN.filter(([k]) => ['airco', 'heat', 'plug'].includes(k) && has(k)).map(([k, l]) => `<span class="fact">${AI[k]}${l.replace(' de courant', '')}</span>`), occFact].join('');
+  const clsTag = u => u.kind === 'loco' ? '<span class="cls loco">Loco</span>' : isMixed(u) ? '<span class="cls one">1re</span><span class="cls">2e</span>' : isFirst(u) ? '<span class="cls one">1re</span>' : '<span class="cls">2e</span>';
+  const carLabel = u => u.kind === 'loco' ? `Locomotive ${matName(u.parent)}` : `Voiture ${u.no}, ${isMixed(u) ? '1re et 2e classe' : isFirst(u) ? '1re classe' : '2e classe'}`;
+  const seats = u => { const p = []; if (u.first) p.push(`<b>${u.first}</b> places en 1re`); if (u.second) p.push(`<b>${u.second}</b> places en 2e`); return p.join(' · '); };
+  const am = AMEN.filter(([k]) => sel && sel[k]);
+  return `<section class="compo" id="compo">
+    <div class="compo-top"><h3>Composition</h3>${comp.segments.length > 1 ? `<div class="seg" role="group" aria-label="Partie du train">${comp.segments.map((s, i) => `<button data-seg="${i}" aria-pressed="${i === si}">Partie ${i + 1}</button>`).join('')}</div>` : ''}</div>
+    ${comp.segments.length > 1 ? `<div class="compo-route">Partie ${si + 1} : ${esc(seg.from)} ${I.arrow} ${esc(seg.to)}</div>` : ''}
+    <button class="first-hint lens" id="goFirst" ${hint.known ? '' : 'disabled'}><span class="cls one big">1re</span><span><small>1re classe</small>${esc(hint.text)}</span>${hint.known ? `<span class="go">Voir ${I.chev}</span>` : ''}</button>
+    <div class="strip-wrap">
+      <div class="strip-cap">${AI.head}Tête du train</div>
+      <div class="strip" id="strip">${units.map((u, i) => `<button class="car ${i === view.selCar ? 'sel' : ''} ${isFirst(u) ? 'first' : ''}" data-car="${i}" aria-pressed="${i === view.selCar}" aria-label="${esc(carLabel(u))}">
+        <span class="car-am">${['wc', 'pmr', 'bike'].filter(k => u[k]).map(k => AI[k]).join('')}</span>
+        ${carSVG(u)}
+        <span class="car-lbl">${u.no ? `<b>${u.no}</b>` : ''}${clsTag(u)}</span></button>`).join('')}</div>
+    </div>
+    <div class="facts">${facts}</div>
+    ${sel ? `<div class="car-card">
+      <div class="cc-h"><b>${sel.kind === 'loco' ? 'Locomotive' : 'Voiture ' + sel.no}</b>${clsTag(sel)}<span class="cc-m">${esc(matName(sel.parent))}${sel.sub ? ' · ' + esc(sel.sub) : ''}</span></div>
+      ${sel.kind === 'loco' ? '<div class="cc-s">Pas de places voyageurs : elle tire ou pousse le train.</div>' : `${seats(sel) ? `<div class="cc-s">${seats(sel)}</div>` : ''}
+      ${am.length ? `<ul class="cc-am">${am.map(([k, l]) => `<li>${AI[k]}${l}</li>`).join('')}</ul>` : '<div class="cc-s">Aucun équipement particulier signalé.</div>'}`}
+    </div>` : ''}
+  </section>`;
+}
+function bindCompo(view, comp, occ, type) {
+  const box = $('#compo'); if (!box || !comp) return;
+  const redraw = (scrollTo) => {
+    const sl = $('#strip')?.scrollLeft || 0;
+    $('#compo').outerHTML = compoHTML(comp, view, occ, type);
+    const s = $('#strip'); if (s) s.scrollLeft = sl;
+    bindCompo(view, comp, occ, type);
+    if (scrollTo != null) { const el = $(`#strip [data-car="${scrollTo}"]`); if (el && s) s.scrollTo({ left: el.offsetLeft - (s.clientWidth - el.offsetWidth) / 2, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }
+  };
+  box.querySelectorAll('[data-car]').forEach(b => b.onclick = () => { view.selCar = +b.dataset.car; redraw(); });
+  box.querySelectorAll('[data-seg]').forEach(b => b.onclick = () => { view.seg = +b.dataset.seg; view.selCar = null; redraw(); });
+  const g = $('#goFirst'); if (g) g.onclick = () => { const seg = comp.segments[Math.min(view.seg || 0, comp.segments.length - 1)]; const h = firstHint(seg.units); if (h.target) { view.selCar = seg.units.indexOf(h.target); redraw(view.selCar); } };
+}
+
+
 /* ================= UI helpers ================= */
 const head = $('#sheetHead'), body = $('#sheetBody');
 function pill(delay, canceled, size = '') {
@@ -981,11 +1247,11 @@ async function renderTrip(v) {
     let ts = null, legIdx = 0;
     c.legs.forEach((l, i) => { if (!l.vehicle || ts) return; const s = trainState(l.vehicle); if (s && s.kind !== 'done' && s.kind !== 'before') { ts = s; legIdx = i; } });
     if (!ts && l0.vehicle) { ts = trainState(l0.vehicle); }
-    const comp = v.comp;
+    const comp = v.comp, keepSl = $('#strip')?.scrollLeft || 0;
     body.innerHTML = `<div class="d-head">${`<span class="chip brand">SNCB</span>`}${c.legs.map(l => chip(l.short, l.type)).join('')}${pill(Math.max(c.dep.delay, c.arr.delay), c.canceled)}</div>
     <div class="ends"><div><div class="big tn">${hm(c.dep.time)}</div><div class="nm">${esc(c.dep.station)}</div></div><div class="track"><span></span><span></span></div><div><div class="big tn">${hm(c.arr.time)}</div><div class="nm">${esc(c.arr.station)}</div></div></div>
     <div class="date">${esc(fD.format(new Date(c.dep.time * 1000)))}</div>
-    <div><div class="art">${trainArt(comp?.material, l0.type)}</div><div class="model">${esc(comp ? matLabel(comp) : (comp === undefined ? 'Composition…' : 'Composition non communiquée'))}</div></div>
+    ${compoHTML(comp, v, c.occ || l0.occ, l0.type)}
     <div class="stats">
       <div><div class="k">DÉPART</div><div class="v tn">${hm(c.dep.time)}${lateTag(c.dep.delay)}</div></div>
       <div class="mid tn">${dur(total)}<br>${dist ? km(dist) : '–'}<br>${dist && total ? Math.round(dist / (total / 3600)) + ' km/h' : ''}</div>
@@ -1009,7 +1275,9 @@ async function renderTrip(v) {
     }).join('')}</div>
     <button class="btn lens ${isFavPair(c) ? 'on' : ''}" id="favTrip">${isFavPair(c) ? I.starF + ' Dans vos favoris' : I.star + ' Épingler ce trajet'}</button>
     ${demoNote()}`;
-    body.querySelectorAll('.leg-h').forEach(b => b.onclick = () => { const l = c.legs[+b.dataset.leg]; push({ type: 'train', id: l.vehicleId, date: l.from.time, short: l.short, type_: l.type, board: l.from.station }); });
+    if ($('#strip')) $('#strip').scrollLeft = keepSl;
+    bindCompo(v, comp, c.occ || l0.occ, l0.type);
+    body.querySelectorAll('.leg-h').forEach(b => b.onclick = () => { const l = c.legs[+b.dataset.leg]; push({ type: 'train', id: l.vehicleId, date: l.from.time, short: l.short, type_: l.type, board: l.from.station, occ: l.occ || (c.legs.length === 1 ? c.occ : null) }); });
     $('#favTrip').onclick = () => { const f = { from: c.dep.station, to: c.arr.station }; if (isFavPair(c)) S.favs = S.favs.filter(x => !(x.from === f.from && x.to === f.to)); else S.favs = [f, ...S.favs].slice(0, 12); store.set('favs', S.favs); drawn(); };
     if (current() === v) {
       const before = JSON.stringify(focus);
@@ -1040,6 +1308,7 @@ async function renderTrain(v) {
   try { veh = await getVehicle(v.id, v.date); } catch { if (current() === v) body.innerHTML = `<div class="err">Les données de ce train ne sont pas disponibles pour le moment.<br><button id="retry">Réessayer</button></div>`; const r = $('#retry'); if (r) r.onclick = () => render(); return; }
   if (current() !== v) return;
   const draw = (comp) => {
+    const keepSl = $('#strip')?.scrollLeft || 0;
     const st = trainState(veh), stops = veh.stops;
     const first = stops[0], last = stops[stops.length - 1];
     const d0 = first.dep + first.depDelay, d1 = last.arr + last.arrDelay, s0 = first.dep, s1 = last.arr;
@@ -1050,7 +1319,7 @@ async function renderTrain(v) {
     body.innerHTML = `<div class="d-head"><span class="chip brand">SNCB</span>${chip(veh.short, veh.type)}${pill(st && st.kind !== 'before' ? curDelay : 0, stops.every(s => s.canceled))}</div>
     <div class="ends"><div><div class="big tn">${hm(s0)}</div><div class="nm">${esc(first.name)}</div></div><div class="track"><span></span><span></span></div><div><div class="big tn">${hm(s1)}</div><div class="nm">${esc(last.name)}</div></div></div>
     <div class="date">${esc(fD.format(new Date(first.dep * 1000)))}</div>
-    <div><div class="art">${trainArt(comp?.material, veh.type)}</div><div class="model">${esc(comp === undefined ? 'Composition…' : matLabel(comp))}</div></div>
+    ${compoHTML(comp, v, v.occ, veh.type)}
     <div class="stats"><div><div class="k">DÉPART</div><div class="v tn">${hm(s0)}${lateTag(first.depDelay)}</div></div><div class="mid tn">${dur(d1 - d0)}<br>${km(dist)}<br>${Math.round(dist / Math.max(1, (d1 - d0) / 3600))} km/h</div><div><div class="k">ARRIVÉE</div><div class="v tn">${hm(s1)}${lateTag(last.arrDelay)}</div></div></div>
     ${st ? `<div class="live-row"><i></i><span>${esc(nextStop && st.kind !== 'before' ? `Prochain arrêt : ${nextStop.name} ${hm((nextStop.arr ?? nextStop.dep) + (nextStop.arrDelay || 0))}` : st.text)}</span><span>${S.live ? 'temps réel' : 'simulation'}</span></div>` : ''}
     ${st ? `<div class="note">${esc(st.text)}${maxDelay >= 60 ? ` · retard max. observé ${Math.round(maxDelay / 60)} min` : ''}</div>` : ''}
@@ -1063,6 +1332,8 @@ async function renderTrain(v) {
       return `<li class="${end || mine ? 'end' : ''} ${past ? 'past' : ''} ${here ? 'train-here' : ''}"><span class="tt tn">${s.canceled ? '<s>' : ''}${t ? hm(t) : ''}${s.canceled ? '</s>' : ''}${lateTag(d || 0)}</span><span class="dot"></span><span class="sn">${esc(s.name)}${s.canceled ? ' · supprimé' : ''}</span><span class="pf">${s.platform ? 'voie ' + esc(s.platform) : ''}</span></li>`;
     }).join('')}</ul>
     ${demoNote()}`;
+    if ($('#strip')) $('#strip').scrollLeft = keepSl;
+    bindCompo(v, comp, v.occ, veh.type);
     setRoute({ segments: [stops], ends: [first, last], labels: [first, last], train: st && st.kind !== 'done' && st.kind !== 'before' ? st.pos : null });
   };
   draw(undefined);
@@ -1105,7 +1376,7 @@ function renderBoardList() {
       <div style="min-width:0"><div class="dest">${esc(d.dest)}</div><div class="sub">${chip(d.short, d.type)}${d.canceled ? '<span class="pill bad" style="height:24px"><i></i>Supprimé</span>' : ''}</div></div>
       ${quai(d.platform, d.platformChanged)}
     </button>`).join('')}</div>`;
-  box.querySelectorAll('.dep').forEach(b => b.onclick = () => { const d = S.board[+b.dataset.i]; push({ type: 'train', id: d.vehicleId, date: d.date, short: d.short, type_: d.type, board: S.boardSt.name }); });
+  box.querySelectorAll('.dep').forEach(b => b.onclick = () => { const d = S.board[+b.dataset.i]; push({ type: 'train', id: d.vehicleId, date: d.date, short: d.short, type_: d.type, board: S.boardSt.name, occ: d.occ }); });
 }
 
 /* ================= View: favourites ================= */
