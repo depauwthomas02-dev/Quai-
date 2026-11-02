@@ -27,6 +27,7 @@
   --accent: #0A5FC8; --accent-soft: rgba(10,95,200,.12); --route: #0A5FC8; --route-glow: rgba(10,95,200,.22);
   --ok: #157A4C; --ok-bg: rgba(31,160,100,.16); --warn: #9A5A00; --warn-bg: rgba(240,160,30,.22); --bad: #B8261F; --bad-bg: rgba(220,60,50,.15);
   --chip: rgba(255,255,255,.78);
+  --g-clear: rgba(255,255,255,.34); --g-reg: rgba(250,252,251,.6); --g-sheen: rgba(255,255,255,.55); --g-spec: rgba(255,255,255,.95); --g-spec-lo: rgba(255,255,255,.4); --g-inner: rgba(255,255,255,.4); --g-drop: rgba(18,32,26,.2);
   --gap-edge: max(8px, env(safe-area-inset-left, 0px));
   --dock-h: 62px; --dock-b: max(10px, calc(env(safe-area-inset-bottom, 0px) - 22px));
   --f-display: "Bricolage Grotesque", -apple-system, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
@@ -41,6 +42,7 @@
   --accent: #5AA2FF; --accent-soft: rgba(90,162,255,.16); --route: #5AA2FF; --route-glow: rgba(90,162,255,.28);
   --ok: #4FD796; --ok-bg: rgba(79,215,150,.15); --warn: #FFBC57; --warn-bg: rgba(255,188,87,.16); --bad: #FF7A70; --bad-bg: rgba(255,122,112,.16);
   --chip: rgba(255,255,255,.10); color-scheme: dark;
+  --g-clear: rgba(36,40,46,.36); --g-reg: rgba(24,27,32,.64); --g-sheen: rgba(255,255,255,.12); --g-spec: rgba(255,255,255,.45); --g-spec-lo: rgba(255,255,255,.12); --g-inner: rgba(255,255,255,.07); --g-drop: rgba(0,0,0,.55);
 } }
 :root[data-theme="dark"] {
   --land: #1C2226; --land-out: #161B1E; --forest: #1F2B24; --urban: #272D31; --water: #0F2234;
@@ -51,9 +53,11 @@
   --accent: #5AA2FF; --accent-soft: rgba(90,162,255,.16); --route: #5AA2FF; --route-glow: rgba(90,162,255,.28);
   --ok: #4FD796; --ok-bg: rgba(79,215,150,.15); --warn: #FFBC57; --warn-bg: rgba(255,188,87,.16); --bad: #FF7A70; --bad-bg: rgba(255,122,112,.16);
   --chip: rgba(255,255,255,.10); color-scheme: dark;
+  --g-clear: rgba(36,40,46,.36); --g-reg: rgba(24,27,32,.64); --g-sheen: rgba(255,255,255,.12); --g-spec: rgba(255,255,255,.45); --g-spec-lo: rgba(255,255,255,.12); --g-inner: rgba(255,255,255,.07); --g-drop: rgba(0,0,0,.55);
 }
 
 html, body { height: 100%; }
+.card, .compo-btn, .first-hint, .car-card, .demo-note, .err, .inset, .more { box-sizing: border-box; }
 body { background: var(--land-out); color: var(--ink); font-family: var(--f-body); overflow: hidden; -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
 button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -84,30 +88,40 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 #map .r-pulse { fill: var(--route); opacity: .35; transform-box: fill-box; transform-origin: center; animation: pulse 1.8s ease-out infinite; }
 @keyframes pulse { from { transform: scale(.6); opacity: .5; } to { transform: scale(2.6); opacity: 0; } }
 
-/* ---------- Liquid Glass ---------- */
+/* ---------- Liquid Glass ----------
+   iOS/Safari ne sait pas réfracter le fond (backdrop-filter: url() n'y est pas rendu) :
+   on construit le verre en couches — teinte légère, flou court et saturé, reflet spéculaire
+   sur l'arête haute, halo intérieur pour l'épaisseur, ombre portée douce. */
 .glass {
   position: relative; isolation: isolate;
-  background: var(--glass);
-  -webkit-backdrop-filter: blur(22px) saturate(190%) brightness(1.04);
-  backdrop-filter: blur(22px) saturate(190%) brightness(1.04);
-  box-shadow: inset 0 1px 1px var(--rim), inset 0 -1px 1px var(--rim-low), 0 10px 34px -6px var(--shade), 0 1px 3px var(--shade);
+  background: radial-gradient(140% 100% at 18% -20%, var(--g-sheen) 0%, transparent 52%), var(--g-clear);
+  -webkit-backdrop-filter: blur(12px) saturate(200%) brightness(1.06);
+  backdrop-filter: blur(12px) saturate(200%) brightness(1.06);
+  box-shadow:
+    inset 1.5px 1.5px 0 -.5px var(--g-spec), inset -1px -1px 0 -.5px var(--g-spec-lo),
+    inset 0 0 0 .5px var(--g-spec-lo), inset 0 0 12px 1px var(--g-inner),
+    0 8px 24px -8px var(--g-drop), 0 1px 2px var(--g-drop);
 }
 .glass::before {
   content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none; z-index: 2;
-  background: linear-gradient(140deg, var(--rim) 0%, transparent 32%, transparent 64%, var(--rim) 100%);
+  background: linear-gradient(135deg, var(--g-spec) 0%, transparent 28%, transparent 70%, var(--g-spec-lo) 100%);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
   mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-  opacity: .9;
+  opacity: .8;
 }
-.glass.strong { background: var(--glass-strong); }
-.lens { position: relative; overflow: hidden; transition: transform .35s cubic-bezier(.3,1.6,.5,1), background-color .2s; }
+.glass.strong {
+  background: radial-gradient(120% 60% at 20% -10%, var(--g-sheen) 0%, transparent 45%), var(--g-reg);
+  -webkit-backdrop-filter: blur(30px) saturate(190%) brightness(1.04);
+  backdrop-filter: blur(30px) saturate(190%) brightness(1.04);
+}
+.lens { position: relative; overflow: hidden; transition: transform .45s cubic-bezier(.34,1.56,.64,1), background-color .2s; }
 .lens::after {
-  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .25s;
-  background: radial-gradient(120px circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,.45), transparent 60%);
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .3s;
+  background: radial-gradient(110px circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,.4), transparent 60%);
 }
-.lens:hover::after { opacity: .6; }
-.lens:active { transform: scale(.955); }
-.lens:active::after { opacity: 1; }
+@media (hover: hover) { .lens:hover::after { opacity: .5; } }
+.lens:active { transform: scale(.955); transition-duration: .12s; }
+.lens:active::after { opacity: .9; }
 
 /* ---------- Top bar ---------- */
 .top { position: fixed; z-index: 20; top: calc(env(safe-area-inset-top, 0px) + 10px); left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); display: flex; justify-content: flex-end; align-items: center; gap: 10px; pointer-events: none; }
@@ -155,7 +169,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .sheet-head h2 { font-family: var(--f-display); font-weight: 800; font-size: 26px; letter-spacing: -.025em; margin: 0; flex: 1; min-width: 0; text-wrap: balance; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .icon-btn { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--chip); flex: none; box-shadow: inset 0 1px 1px var(--rim), 0 1px 2px var(--shade); }
 .icon-btn[aria-pressed="true"] { color: var(--warn); }
-.sheet-body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 2px 16px calc(var(--dock-b) + var(--dock-h) + 10px); -webkit-overflow-scrolling: touch; }
+.sheet-body { flex: 1; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; padding: 2px 16px calc(var(--dock-b) + var(--dock-h) + 10px); -webkit-overflow-scrolling: touch; }
 .sheet-body > * + * { margin-top: 14px; }
 .sheet-body {
   -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - var(--dock-b) - var(--dock-h) + 2px), transparent calc(100% - var(--dock-b) - var(--dock-h) / 2));
@@ -166,11 +180,18 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 /* ---------- Tab bar ---------- */
 .dock { position: fixed; z-index: 20; bottom: var(--dock-b); left: max(18px, calc(env(safe-area-inset-left, 0px) + 10px)); right: max(18px, calc(env(safe-area-inset-right, 0px) + 10px)); display: flex; gap: 10px; align-items: center; }
 @media (min-width: 860px) { .dock { right: auto; width: 420px; left: max(30px, calc(env(safe-area-inset-left, 0px) + 10px)); bottom: 30px; } }
-.dock .glass { background: var(--glass-strong); box-shadow: inset 0 1px 1px var(--rim), inset 0 -1px 1px var(--rim-low), 0 6px 24px -4px var(--shade), 0 0 0 .5px var(--hair); }
-.tabs { flex: 1; height: var(--dock-h); border-radius: calc(var(--dock-h) / 2); display: flex; padding: 4px; gap: 2px; }
+.dock .glass { -webkit-backdrop-filter: blur(14px) saturate(200%) brightness(1.06); backdrop-filter: blur(14px) saturate(200%) brightness(1.06); }
+.tabs { flex: 1; height: var(--dock-h); border-radius: calc(var(--dock-h) / 2); display: flex; padding: 4px; gap: 2px; position: relative; }
+.tab { position: relative; z-index: 1; }
+.tab-ind { position: absolute; top: 4px; bottom: 4px; left: 0; width: 0; translate: var(--x, 0) 0; border-radius: calc(var(--dock-h) / 2 - 4px); z-index: 0; pointer-events: none;
+  background: radial-gradient(120% 90% at 30% 0%, var(--g-sheen), transparent 60%), var(--accent-soft);
+  box-shadow: inset 1px 1px 0 -.5px var(--g-spec), inset 0 0 10px var(--g-inner), 0 2px 10px -3px var(--g-drop);
+  transition: translate .55s cubic-bezier(.34,1.45,.64,1), width .45s cubic-bezier(.34,1.3,.64,1); }
+.tab-ind.go { animation: drop .55s cubic-bezier(.3,1.4,.5,1); }
+@keyframes drop { 35% { scale: 1.16 .86; } 70% { scale: .97 1.04; } }
 .tab { flex: 1; border-radius: calc(var(--dock-h) / 2 - 4px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 11px; font-weight: 600; color: var(--ink-2); }
 .tab svg { width: 23px; height: 23px; }
-.tab[aria-selected="true"] { color: var(--accent); background: var(--accent-soft); }
+.tab[aria-selected="true"] { color: var(--accent); }
 .fab { width: var(--dock-h); height: var(--dock-h); border-radius: 50%; display: grid; place-items: center; flex: none; }
 .fab svg { width: 25px; height: 25px; }
 
@@ -406,6 +427,7 @@ s.sched { color: var(--ink-3); font-size: .55em; font-weight: 600; text-decorati
 
 <nav class="dock">
   <div class="tabs glass" role="tablist">
+    <span class="tab-ind" id="tabInd" aria-hidden="true"></span>
     <button class="tab lens" role="tab" data-tab="plan" aria-selected="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="5" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.5 5H15a3.5 3.5 0 0 1 0 7H9a3.5 3.5 0 0 0 0 7h6.5"/></svg>Itinéraire</button>
     <button class="tab lens" role="tab" data-tab="board" aria-selected="false">
@@ -1341,7 +1363,13 @@ document.addEventListener('pointermove', e => { const el = e.target.closest?.('.
 function current() { return S.stack[S.stack.length - 1]; }
 function push(v) { S.stack.push(v); render(true); }
 function pop() { if (S.stack.length > 1) { S.stack.pop(); render(true); } }
-function setTab(t) { S.tab = t; S.stack = [{ type: t }]; document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t)); render(true); }
+function moveInd(animate) {
+  const ind = $('#tabInd'), t = $('.tab[aria-selected="true"]'); if (!ind || !t) return;
+  if (!animate) ind.style.transition = 'none';
+  ind.style.setProperty('--x', t.offsetLeft + 'px'); ind.style.width = t.offsetWidth + 'px';
+  if (animate) { ind.classList.remove('go'); void ind.offsetWidth; ind.classList.add('go'); } else { void ind.offsetWidth; ind.style.transition = ''; }
+}
+function setTab(t) { const moved = S.tab !== t; S.tab = t; S.stack = [{ type: t }]; document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t)); moveInd(moved); render(true); }
 document.querySelectorAll('.tab').forEach(b => b.onclick = () => setTab(b.dataset.tab));
 $('#fab').onclick = () => {
   if (S.tab === 'board') openPicker('Gare de départ', st => { S.boardSt = st; store.set('boardSt', st.name); setTab('board'); loadBoard(); });
@@ -1696,13 +1724,14 @@ function openPicker(title, cb) {
   const move = e => { if (!start) return; const s = snaps(); set(Math.max(s[0] - 40, Math.min(s[2] + 20, start.h - (e.clientY - start.y)))); };
   const up = () => { if (!start) return; start = null; sheet.classList.remove('dragging'); const s = snaps(); set(s.reduce((a, b) => Math.abs(b - h) < Math.abs(a - h) ? b : a)); setTimeout(() => refit(), 460); };
   [$('#grab'), $('#sheetHead')].forEach(el => { el.addEventListener('pointerdown', down); el.addEventListener('pointermove', move); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up); });
-  addEventListener('resize', () => { const s = snaps(); set(s[1]); if (GL.on) GL.map.resize(); else applyView(); refit(true); });
+  addEventListener('resize', () => { moveInd(false); const s = snaps(); set(s[1]); if (GL.on) GL.map.resize(); else applyView(); refit(true); });
 })();
 
 /* ================= Boot ================= */
 async function boot() {
   drawBase();
   refit(true);
+  moveInd(false); document.fonts?.ready.then(() => moveInd(false));
   initGL();
   $('#recenter').onclick = () => { GL.follow = true; follow = true; $('#recenter').hidden = true; refit(); };
   S.from = null; S.to = null;
