@@ -358,7 +358,13 @@ s.sched { color: var(--ink-3); font-size: .55em; font-weight: 600; text-decorati
 .modal .compo-top h3 { display: none; }
 .modal .compo-top:not(:has(.seg)) { display: none; }
 
+.fav-go { display: flex; align-items: center; gap: 10px; }
+.fav-go .r { flex: 1; min-width: 0; font-family: var(--f-display); font-weight: 700; font-size: 17px; letter-spacing: -.01em; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.fav-go .r svg { color: var(--ink-3); }
+.fav-go .go { color: var(--ink-3); display: flex; }
+
 /* ---------- Station picker ---------- */
+#kbProxy { position: fixed; top: 0; left: 0; width: 1px; height: 1px; opacity: 0; font-size: 16px; border: 0; padding: 0; pointer-events: none; }
 .picker { position: fixed; z-index: 40; inset: 0; display: flex; flex-direction: column; padding: calc(env(safe-area-inset-top, 0px) + 14px) max(16px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 10px) max(16px, env(safe-area-inset-left, 0px)); background: var(--glass); -webkit-backdrop-filter: blur(30px) saturate(180%); backdrop-filter: blur(30px) saturate(180%); animation: fadeIn .25s ease; }
 @keyframes fadeIn { from { opacity: 0; } }
 .picker-bar { display: flex; gap: 10px; align-items: center; max-width: 560px; width: 100%; margin: 0 auto; }
@@ -408,6 +414,7 @@ s.sched { color: var(--ink-3); font-size: .55em; font-weight: 600; text-decorati
 </nav>
 
 <div id="pickerHost"></div>
+<input id="kbProxy" type="text" aria-hidden="true" tabindex="-1" autocomplete="off">
 
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script>
@@ -1410,7 +1417,13 @@ function renderResults() {
   if (S.connLoading) { box.innerHTML = `<div class="list">${skel(3)}</div>`; return; }
   if (S.connErr === 'net') { box.innerHTML = `<div class="err">Impossible de joindre iRail, le service qui fournit les horaires SNCB. Vérifiez votre connexion.<br><button id="retry">Réessayer</button></div>`; $('#retry').onclick = loadConns; return; }
   if (S.connErr === 'same') { box.innerHTML = `<div class="empty"><b>Même gare</b>Choisissez une destination différente du départ.</div>`; return; }
-  if (!S.conns) { box.innerHTML = `<div class="empty"><b>Où allez-vous ?</b>Choisissez deux gares pour voir les prochains trains.</div>`; return; }
+  if (!S.conns) {
+    box.innerHTML = `<div class="eyebrow">Favoris</div>` + (S.favs.length
+      ? `<div class="list" style="margin-top:8px">${S.favs.map((f, i) => `<button class="card fav-go lens" data-fav="${i}"><span class="r">${esc(f.from)} ${I.arrow} ${esc(f.to)}</span><span class="go">${I.chev}</span></button>`).join('')}</div>`
+      : `<div class="note" style="margin-top:6px">Aucun trajet épinglé pour l'instant. Choisissez deux gares, puis touchez l'étoile en haut pour retrouver le trajet ici.</div>`);
+    box.querySelectorAll('[data-fav]').forEach(b => b.onclick = () => { const f = S.favs[+b.dataset.fav]; S.from = findSt(f.from); S.to = findSt(f.to); S.when = null; render(); loadConns(); });
+    return;
+  }
   if (!S.conns.length) { box.innerHTML = `<div class="empty"><b>Aucun trajet trouvé</b>Essayez une autre heure ou une gare voisine.</div>`; return; }
   const t = nowS();
   box.innerHTML = `<div class="eyebrow">${S.conns.length} trajets · ${esc(fD.format(new Date(S.conns[0].dep.time * 1000)))}</div>
@@ -1587,13 +1600,16 @@ function renderFavs() {
 
 /* ================= Station picker ================= */
 function openPicker(title, cb) {
+  // iOS n'ouvre le clavier que sur un champ déjà présent au moment du toucher :
+  // on active d'abord ce champ invisible, puis on passe la main au vrai champ (le clavier reste ouvert)
+  const proxy = $('#kbProxy'); try { proxy.focus({ preventScroll: true }); } catch {}
   const host = $('#pickerHost');
   host.innerHTML = `<div class="picker" role="dialog" aria-label="${esc(title)}">
     <div class="picker-bar"><label class="picker-in">${I.search}<input id="pq" type="search" autofocus placeholder="${esc(title)}" autocomplete="off" enterkeyhint="go"></label>
     <button class="icon-btn lens" id="pClose" aria-label="Fermer">${I.x}</button></div>
     <ul class="picker-list" id="pl"></ul></div>`;
   const q = $('#pq'), list = $('#pl');
-  const close = () => { host.innerHTML = ''; };
+  const close = () => { host.innerHTML = ''; proxy.blur(); };
   $('#pClose').onclick = close;
   const draw = () => {
     const nq = norm(q.value);
@@ -1608,7 +1624,7 @@ function openPicker(title, cb) {
     list.querySelectorAll('button').forEach(b => b.onclick = () => { const st = items[+b.dataset.i]; remember(st); close(); cb(st); });
   };
   q.oninput = draw; q.onkeydown = e => { if (e.key === 'Enter') list.querySelector('button')?.click(); if (e.key === 'Escape') close(); };
-  q.focus({ preventScroll: true }); draw();
+  q.focus({ preventScroll: true }); requestAnimationFrame(() => { if (document.activeElement !== q) q.focus({ preventScroll: true }); }); draw();
 }
 
 /* ================= Sheet drag ================= */
@@ -1634,8 +1650,7 @@ async function boot() {
   refit(true);
   initGL();
   $('#recenter').onclick = () => { GL.follow = true; follow = true; $('#recenter').hidden = true; refit(); };
-  const od = store.get('od', null);
-  S.from = findSt(od?.from || 'Bruxelles-Central'); S.to = findSt(od?.to || 'Gand-Saint-Pierre');
+  S.from = null; S.to = null;
   S.boardSt = findSt(store.get('boardSt', 'Bruxelles-Central')) || byName.get('Bruxelles-Central');
   S.stack = [{ type: 'plan' }];
   // try live first, quickly
