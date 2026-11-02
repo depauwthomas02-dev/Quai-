@@ -363,6 +363,11 @@ s.sched { color: var(--ink-3); font-size: .55em; font-weight: 600; text-decorati
 .fav-go .r svg { color: var(--ink-3); }
 .fav-go .go { color: var(--ink-3); display: flex; }
 
+.more { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; height: 44px; margin-top: 8px; border-radius: 22px; font-weight: 700; font-size: 15px; color: var(--accent); background: var(--accent-soft); }
+.more:disabled { color: var(--ink-3); background: var(--chip); cursor: default; }
+.pill.off { color: var(--ink-3); background: var(--chip); box-shadow: inset 0 0 0 1px var(--hair); }
+.dep.gone { opacity: .6; }
+
 /* ---------- Station picker ---------- */
 #kbProxy { position: fixed; top: 0; left: 0; width: 1px; height: 1px; opacity: 0; font-size: 16px; border: 0; padding: 0; pointer-events: none; }
 .picker { position: fixed; z-index: 40; inset: 0; display: flex; flex-direction: column; padding: calc(env(safe-area-inset-top, 0px) + 14px) max(16px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 10px) max(16px, env(safe-area-inset-left, 0px)); background: var(--glass); -webkit-backdrop-filter: blur(30px) saturate(180%); backdrop-filter: blur(30px) saturate(180%); animation: fadeIn .25s ease; }
@@ -595,7 +600,7 @@ const Demo = (() => {
     }
     return sel === 'arrival' ? out.slice(-6) : out.slice(0, 6);
   }
-  function board(station, t) {
+  function board(station, t, past) {
     const res = [];
     lines.forEach(L => [0, 1].forEach(dir => {
       const { st } = stopsDir(L, dir); const k = st.findIndex(s => s.name === station.name);
@@ -606,7 +611,7 @@ const Demo = (() => {
         res.push({ time: s.dep, delay: s.depDelay, dest: v.direction, short: v.short, type: v.type, platform: s.platform, platformChanged: hash(v.id) % 17 === 0, canceled: false, vehicleId: v.id, date: s.dep, occ: demoOcc(v.id) });
       }
     }));
-    return res.sort((a, b) => a.time - b.time).filter(d => d.time + d.delay >= t - 60).slice(0, 14);
+    return res.sort((a, b) => a.time - b.time).filter(d => past ? d.time >= t : d.time + d.delay >= t - 60).slice(0, 14);
   }
   function getVehicle(id) { const [, i, d, T0] = id.split('.'); return vehicle(lines[+i], +d, +T0); }
   return { connections, board, getVehicle, lines };
@@ -668,8 +673,9 @@ const Live = {
       const cc = buildConn(legs); cc.occ = occOf(c.occupancy) || occOf(c.departure?.occupancy); return cc;
     });
   },
-  async board(station) {
-    const r = await api('/liveboard/', { id: station.id, station: station.id ? null : station.name, arrdep: 'departure' });
+  async board(station, t) {
+    const p = t ? bxParts(t) : null;
+    const r = await api('/liveboard/', { id: station.id, station: station.id ? null : station.name, arrdep: 'departure', date: p ? p.day + p.month + p.year : null, time: p ? p.hour + p.minute : null });
     return arr(r.departures?.departure).map(d => ({
       time: num(d.time), delay: num(d.delay), dest: d.station, short: d.vehicleinfo?.shortname || String(d.vehicle).replace('BE.NMBS.', ''), type: d.vehicleinfo?.type || '',
       platform: d.platform, platformChanged: d.platforminfo?.normal === '0', canceled: d.canceled === '1', vehicleId: d.vehicle, date: num(d.time), occ: occOf(d.occupancy)
@@ -703,7 +709,7 @@ const S = {
   boardSt: null,
   tab: 'plan',
   stack: [],
-  conns: null, connErr: null, connLoading: false,
+  conns: null, connErr: null, connLoading: false, more: { earlier: null, later: null },
   board: null, boardErr: null,
   favs: store.get('favs', []),
   recents: store.get('recents', []),
@@ -1403,7 +1409,7 @@ let connReq = 0;
 async function loadConns() {
   if (!S.from || !S.to) { S.conns = null; renderResults(); return; }
   if (S.from.name === S.to.name) { S.conns = []; S.connErr = 'same'; renderResults(); return; }
-  const my = ++connReq; S.connLoading = true; S.connErr = null; renderResults();
+  const my = ++connReq; S.connLoading = true; S.connErr = null; S.more = { earlier: null, later: null }; renderResults();
   try {
     const t = S.when || nowS();
     const res = S.live ? await Live.connections(S.from, S.to, t, S.sel) : Demo.connections(S.from, S.to, t, S.sel);
@@ -1411,6 +1417,29 @@ async function loadConns() {
     S.conns = res;
   } catch (e) { if (my !== connReq) return; S.conns = null; S.connErr = e.status === 404 ? 'none' : 'net'; }
   S.connLoading = false; renderResults(); planMap();
+}
+const MORE_LBL = { earlier: ['Trains précédents', 'Aucun train plus tôt'], later: ['Trains suivants', 'Aucun train plus tard'] };
+const ARR_UP = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>';
+const ARR_DN = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>';
+function moreBtn(dir, state) {
+  const [lbl, none] = MORE_LBL[dir];
+  return `<button class="more lens" data-more="${dir}" ${state ? 'disabled' : ''}>${state === 'loading' ? 'Chargement…' : state === 'none' ? none : (dir === 'earlier' ? ARR_UP : ARR_DN) + lbl}</button>`;
+}
+const connKey = c => c.legs.map(l => l.vehicleId).join('+') + '@' + c.dep.time;
+async function loadMoreConns(dir) {
+  if (!S.conns?.length || S.more[dir]) return;
+  const req = connReq;
+  S.more[dir] = 'loading'; renderResults();
+  try {
+    const t = dir === 'earlier' ? S.conns[0].dep.time - 3600 : S.conns[S.conns.length - 1].dep.time + 60;
+    const res = S.live ? await Live.connections(S.from, S.to, t, 'departure') : Demo.connections(S.from, S.to, t, 'departure');
+    if (req !== connReq) return;
+    const seen = new Set(S.conns.map(connKey));
+    const add = res.filter(c => !seen.has(connKey(c)) && (dir === 'earlier' ? c.dep.time < S.conns[0].dep.time : c.dep.time > S.conns[S.conns.length - 1].dep.time));
+    S.conns = [...S.conns, ...add].sort((a, b) => a.dep.time - b.dep.time);
+    S.more[dir] = add.length ? null : 'none';
+  } catch { if (req === connReq) S.more[dir] = null; }
+  renderResults();
 }
 function renderResults() {
   const box = $('#results'); if (!box) return;
@@ -1427,15 +1456,18 @@ function renderResults() {
   if (!S.conns.length) { box.innerHTML = `<div class="empty"><b>Aucun trajet trouvé</b>Essayez une autre heure ou une gare voisine.</div>`; return; }
   const t = nowS();
   box.innerHTML = `<div class="eyebrow">${S.conns.length} trajets · ${esc(fD.format(new Date(S.conns[0].dep.time * 1000)))}</div>
+  ${moreBtn('earlier', S.more.earlier)}
   <div class="list" style="margin-top:8px">${S.conns.map((c, i) => {
     const gone = c.dep.time + c.dep.delay < t - 30;
     return `<button class="card conn lens ${gone ? 'gone' : ''}" data-i="${i}">
-      <div class="r"><div class="times tn"><span>${hm(c.dep.time)}${lateTag(c.dep.delay)}</span><span class="bar"></span><span>${hm(c.arr.time)}${lateTag(c.arr.delay)}</span></div>${pill(Math.max(c.dep.delay, c.arr.delay), c.canceled, 'sm')}</div>
+      <div class="r"><div class="times tn"><span>${hm(c.dep.time)}${lateTag(c.dep.delay)}</span><span class="bar"></span><span>${hm(c.arr.time)}${lateTag(c.arr.delay)}</span></div>${gone && !c.canceled ? `<span class="pill sm off"><i></i>${c.arr.time + c.arr.delay < t ? 'Arrivé' : 'Parti'}</span>` : pill(Math.max(c.dep.delay, c.arr.delay), c.canceled, 'sm')}</div>
       <div class="r"><div class="meta"><span class="tn">${dur(c.duration + c.arr.delay - c.dep.delay)}</span><span aria-hidden="true">·</span><span>${c.transfers ? (c.transfers > 1 ? c.transfers + ' correspondances' : '1 correspondance') : 'Direct'}</span></div><span class="vchip ${c.dep.platformChanged ? 'chg' : ''}"><small>Voie</small>${esc(c.dep.platform || '–')}</span></div>
       <div class="chips">${c.legs.map(l => chip(l.short, l.type)).join('')}</div>
     </button>`;
-  }).join('')}</div>`;
+  }).join('')}</div>
+  ${moreBtn('later', S.more.later)}`;
   box.querySelectorAll('.conn').forEach(b => b.onclick = () => push({ type: 'trip', conn: S.conns[+b.dataset.i] }));
+  box.querySelectorAll('[data-more]').forEach(b => b.onclick = () => loadMoreConns(b.dataset.more));
 }
 
 /* ================= View: trip ================= */
@@ -1553,33 +1585,56 @@ async function renderTrain(v) {
 
 /* ================= View: board ================= */
 let boardReq = 0;
-async function loadBoard() {
-  const my = ++boardReq; S.board = null; S.boardErr = null; renderBoardList();
-  try { const r = S.live ? await Live.board(S.boardSt) : Demo.board(S.boardSt, nowS()); if (my === boardReq) S.board = r; }
-  catch (e) { if (my === boardReq) S.boardErr = true; }
+const depKey = d => d.vehicleId + '@' + d.time;
+async function loadBoard(refresh) {
+  const keep = refresh && S.board ? S.board : null;
+  const my = ++boardReq;
+  if (!keep) { S.board = null; S.boardMore = null; } S.boardErr = null; if (!keep) renderBoardList();
+  try {
+    const r = S.live ? await Live.board(S.boardSt) : Demo.board(S.boardSt, nowS());
+    if (my !== boardReq) return;
+    // à l'actualisation, on garde les départs plus anciens déjà chargés
+    S.board = keep && r.length ? [...keep.filter(d => d.time < r[0].time), ...r] : r;
+  } catch (e) { if (my === boardReq && !keep) S.boardErr = true; }
   if (my === boardReq) renderBoardList();
+}
+async function loadEarlierBoard() {
+  if (!S.board?.length || S.boardMore) return;
+  const my = boardReq, first = S.board[0].time;
+  S.boardMore = 'loading'; renderBoardList();
+  try {
+    const r = S.live ? await Live.board(S.boardSt, first - 3600) : Demo.board(S.boardSt, first - 3600, true);
+    if (my !== boardReq) return;
+    const seen = new Set(S.board.map(depKey));
+    const add = r.filter(d => d.time < first && !seen.has(depKey(d)));
+    S.board = [...add, ...S.board];
+    S.boardMore = add.length ? null : 'none';
+  } catch { if (my === boardReq) S.boardMore = null; }
+  renderBoardList();
 }
 function renderBoard() {
   setHead({ title: 'Départs' });
   body.innerHTML = `<div class="od inset" style="padding:0"><button class="field" id="bSt" style="padding-right:16px"><span class="ring fill"></span><span class="lab">Gare</span><span class="val">${esc(S.boardSt.name)}</span></button></div>
     <div id="boardList"></div>${demoNote()}`;
-  $('#bSt').onclick = () => openPicker('Quelle gare ?', st => { S.boardSt = st; remember(st); store.set('boardSt', st.name); render(); loadBoard(); });
+  $('#bSt').onclick = () => openPicker('Quelle gare ?', st => { S.boardSt = st; remember(st); store.set('boardSt', st.name); S.board = null; render(); loadBoard(); });
   renderBoardList();
   setRoute({ ends: [S.boardSt], labels: [S.boardSt], pts: [S.boardSt] });
   if (!S.board && !S.boardErr) loadBoard();
-  tick = setInterval(() => current().type === 'board' && loadBoard(), 60000);
+  tick = setInterval(() => current().type === 'board' && loadBoard(true), 60000);
 }
 function renderBoardList() {
   const box = $('#boardList'); if (!box) return;
   if (S.boardErr) { box.innerHTML = `<div class="err">Le tableau des départs n'a pas pu être chargé.<br><button id="retry">Réessayer</button></div>`; $('#retry').onclick = loadBoard; return; }
   if (!S.board) { box.innerHTML = `<div class="list">${skel(4)}</div>`; return; }
   if (!S.board.length) { box.innerHTML = `<div class="empty"><b>Aucun départ</b>Pas de train annoncé dans l'heure qui vient.</div>`; return; }
-  box.innerHTML = `<div class="eyebrow">Prochains départs · mis à jour ${hm(nowS())}</div><div class="list" style="margin-top:8px">${S.board.map((d, i) => `
-    <button class="card dep lens ${d.canceled ? 'cxl' : ''}" data-i="${i}">
+  const now = nowS();
+  box.innerHTML = `<div class="eyebrow">Départs · mis à jour ${hm(now)}</div>${moreBtn('earlier', S.boardMore).replace('Trains précédents', 'Départs précédents').replace('Aucun train plus tôt', 'Aucun départ plus tôt')}<div class="list" style="margin-top:8px">${S.board.map((d, i) => `
+    <button class="card dep lens ${d.canceled ? 'cxl' : ''} ${d.time + d.delay < now - 30 ? 'gone' : ''}" data-i="${i}">
       <div class="t tn">${hm(d.time)}${d.delay >= 60 ? `<span class="late ${d.delay >= 300 ? 'bad' : ''}">+${Math.round(d.delay / 60)} min</span>` : ''}</div>
-      <div style="min-width:0"><div class="dest">${esc(d.dest)}</div><div class="sub">${chip(d.short, d.type)}${d.canceled ? '<span class="pill bad" style="height:24px"><i></i>Supprimé</span>' : ''}</div></div>
+      <div style="min-width:0"><div class="dest">${esc(d.dest)}</div><div class="sub">${chip(d.short, d.type)}${d.canceled ? '<span class="pill bad" style="height:24px"><i></i>Supprimé</span>' : d.time + d.delay < now - 30 ? '<span class="pill sm off"><i></i>Parti</span>' : ''}</div></div>
       ${quai(d.platform, d.platformChanged)}
     </button>`).join('')}</div>`;
+  box.querySelector('[data-more]')?.addEventListener('click', loadEarlierBoard);
   box.querySelectorAll('.dep').forEach(b => b.onclick = () => { const d = S.board[+b.dataset.i]; push({ type: 'train', id: d.vehicleId, date: d.date, short: d.short, type_: d.type, board: S.boardSt.name, occ: d.occ }); });
 }
 
