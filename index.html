@@ -129,6 +129,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .maplibregl-ctrl-top-left { top: calc(env(safe-area-inset-top, 0px) + 10px); left: max(12px, env(safe-area-inset-left, 0px)); }
 .maplibregl-ctrl-attrib.maplibregl-compact { background: var(--glass-strong); color: var(--ink-2); border-radius: 14px; box-shadow: 0 2px 8px var(--shade); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
 .maplibregl-ctrl-attrib a { color: var(--ink-2); }
+.maplibregl-ctrl-attrib.maplibregl-compact-show { max-width: calc(100vw - 190px); }
 .map-lbl { padding: 6px 11px; border-radius: 13px; font: 700 14px/1.1 var(--f-display); color: var(--ink); white-space: nowrap; pointer-events: none;
   background: var(--glass-strong); -webkit-backdrop-filter: blur(14px) saturate(180%); backdrop-filter: blur(14px) saturate(180%); box-shadow: inset 0 1px 1px var(--rim), 0 4px 14px -2px var(--shade); }
 .map-train { width: 22px; height: 22px; border-radius: 50%; background: var(--route); border: 3px solid #fff; box-shadow: 0 2px 10px var(--shade); position: relative; }
@@ -179,7 +180,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .field { display: grid; grid-template-columns: 22px 44px 1fr; align-items: center; gap: 6px; width: 100%; text-align: left; padding: 12px 64px 12px 16px; min-height: 54px; }
 .field .lab { font-size: 13px; color: var(--ink-3); font-weight: 600; }
 .field .val { font-family: var(--f-display); font-size: 20px; font-weight: 700; letter-spacing: -.015em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-.field .val.empty { color: var(--ink-3); font-weight: 500; }
+.field .val.ph { color: var(--ink-3); font-weight: 600; }
 .ring { width: 14px; height: 14px; border-radius: 50%; border: 3px solid var(--route); background: var(--land); justify-self: center; }
 .ring.fill { background: var(--route); border-color: var(--route); box-shadow: 0 0 0 3px var(--accent-soft); }
 .od-sep { height: 1px; background: var(--hair); margin-left: 54px; margin-right: 64px; }
@@ -832,6 +833,7 @@ function initGL() {
   } catch { el.remove(); return; }
   map.touchZoomRotate.disableRotation();
   map.addControl(new maplibregl.AttributionControl({ compact: true }), 'top-left');
+  map.once('load', () => el.querySelector('.maplibregl-ctrl-attrib')?.classList.remove('maplibregl-compact-show'));
   GL.map = map;
   // si la carte ne charge pas (hors ligne, service indisponible), on garde le schéma
   const giveUp = setTimeout(() => { if (!GL.on) { try { map.remove(); } catch {} el.remove(); GL.map = null; } }, 9000);
@@ -1351,9 +1353,9 @@ function renderPlan() {
   const whenVal = S.when ? toLocalInput(S.when) : '';
   body.innerHTML = `<div>
     <div class="od inset">
-      <button class="field" id="fFrom"><span class="ring"></span><span class="lab">De</span><span class="val ${S.from ? '' : 'empty'}">${esc(S.from?.name || 'Gare de départ')}</span></button>
+      <button class="field" id="fFrom"><span class="ring"></span><span class="lab">De</span><span class="val ${S.from ? '' : 'ph'}">${esc(S.from?.name || 'Gare de départ')}</span></button>
       <div class="od-sep"></div>
-      <button class="field" id="fTo"><span class="ring fill"></span><span class="lab">Vers</span><span class="val ${S.to ? '' : 'empty'}">${esc(S.to?.name || 'Destination')}</span></button>
+      <button class="field" id="fTo"><span class="ring fill"></span><span class="lab">Vers</span><span class="val ${S.to ? '' : 'ph'}">${esc(S.to?.name || 'Destination')}</span></button>
       <button class="swap lens" id="swap" aria-label="Inverser départ et destination">${I.swap}</button>
     </div>
   </div>
@@ -1587,7 +1589,7 @@ function renderFavs() {
 function openPicker(title, cb) {
   const host = $('#pickerHost');
   host.innerHTML = `<div class="picker" role="dialog" aria-label="${esc(title)}">
-    <div class="picker-bar"><label class="picker-in">${I.search}<input id="pq" type="search" placeholder="${esc(title)}" autocomplete="off" enterkeyhint="go"></label>
+    <div class="picker-bar"><label class="picker-in">${I.search}<input id="pq" type="search" autofocus placeholder="${esc(title)}" autocomplete="off" enterkeyhint="go"></label>
     <button class="icon-btn lens" id="pClose" aria-label="Fermer">${I.x}</button></div>
     <ul class="picker-list" id="pl"></ul></div>`;
   const q = $('#pq'), list = $('#pl');
@@ -1606,7 +1608,7 @@ function openPicker(title, cb) {
     list.querySelectorAll('button').forEach(b => b.onclick = () => { const st = items[+b.dataset.i]; remember(st); close(); cb(st); });
   };
   q.oninput = draw; q.onkeydown = e => { if (e.key === 'Enter') list.querySelector('button')?.click(); if (e.key === 'Escape') close(); };
-  draw(); setTimeout(() => q.focus(), 60);
+  q.focus({ preventScroll: true }); draw();
 }
 
 /* ================= Sheet drag ================= */
