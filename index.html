@@ -115,13 +115,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   backdrop-filter: blur(30px) saturate(190%) brightness(1.04);
 }
 .lens { position: relative; overflow: hidden; transition: transform .45s cubic-bezier(.34,1.56,.64,1), background-color .2s; }
-.lens::after {
-  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .3s;
-  background: radial-gradient(110px circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,.4), transparent 60%);
-}
-@media (hover: hover) { .lens:hover::after { opacity: .5; } }
 .lens:active { transform: scale(.955); transition-duration: .12s; }
-.lens:active::after { opacity: .9; }
 
 /* ---------- Top bar ---------- */
 .top { position: fixed; z-index: 20; top: calc(env(safe-area-inset-top, 0px) + 10px); left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); display: flex; justify-content: flex-end; align-items: center; gap: 10px; pointer-events: none; }
@@ -169,7 +163,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .sheet-head h2 { font-family: var(--f-display); font-weight: 800; font-size: 26px; letter-spacing: -.025em; margin: 0; flex: 1; min-width: 0; text-wrap: balance; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .icon-btn { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--chip); flex: none; box-shadow: inset 0 1px 1px var(--rim), 0 1px 2px var(--shade); }
 .icon-btn[aria-pressed="true"] { color: var(--warn); }
-.sheet-body { flex: 1; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; padding: 2px 16px calc(var(--dock-b) + var(--dock-h) + 10px); -webkit-overflow-scrolling: touch; }
+.sheet-body { flex: 1; overflow-x: hidden; overflow-y: auto; touch-action: pan-y; overscroll-behavior-x: none; overscroll-behavior: contain; padding: 2px 16px calc(var(--dock-b) + var(--dock-h) + 10px); -webkit-overflow-scrolling: touch; }
 .sheet-body > * + * { margin-top: 14px; }
 .sheet-body {
   -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - var(--dock-b) - var(--dock-h) + 2px), transparent calc(100% - var(--dock-b) - var(--dock-h) / 2));
@@ -1357,7 +1351,6 @@ function setHead({ title, back = false, actions = '' }) {
 function demoNote() {
   return S.live ? '' : `<div class="demo-note">${I.info}<div><b>Horaires simulés.</b> Le service iRail, qui fournit les horaires SNCB, ne répond pas pour le moment. Quai affiche donc des horaires d'exemple. Rechargez la page pour réessayer.</div></div>`;
 }
-document.addEventListener('pointermove', e => { const el = e.target.closest?.('.lens'); if (!el) return; const r = el.getBoundingClientRect(); el.style.setProperty('--mx', (e.clientX - r.left) + 'px'); el.style.setProperty('--my', (e.clientY - r.top) + 'px'); });
 
 /* ================= Navigation ================= */
 function current() { return S.stack[S.stack.length - 1]; }
